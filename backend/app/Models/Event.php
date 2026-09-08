@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\EventStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Enums\EventStatus;
-use App\Models\Organizer;
-use App\Models\EventApplication;
-
 
 class Event extends Model
 {

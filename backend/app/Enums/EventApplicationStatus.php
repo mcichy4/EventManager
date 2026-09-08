@@ -8,4 +8,4 @@ enum EventApplicationStatus: string
     case ACCEPTED = 'accepted';
     case REJECTED = 'rejected';
     case CANCELLED = 'cancelled';
-    }
+}

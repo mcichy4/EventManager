@@ -2,23 +2,19 @@
 
 namespace Tests\Feature\Actions\Events;
 
-use App\Enums\OrganizerType;
-use App\Enums\EventStatus;
-
 use App\Actions\Events\RejectEventApplication;
 use App\Enums\EventApplicationStatus;
-use App\Models\EventApplication;
-use App\Models\User;
-use App\Models\Organizer;
+use App\Enums\EventStatus;
+use App\Enums\OrganizerType;
 use App\Models\Event;
-
+use App\Models\EventApplication;
+use App\Models\Organizer;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class RejectEventApplicationTest extends TestCase
 {
-
     use RefreshDatabase;
 
     public function test_reject_pending_event_application(): void
@@ -26,7 +22,6 @@ class RejectEventApplicationTest extends TestCase
         $eventApplication = $this->createEventApplication();
 
         $result = app(RejectEventApplication::class)->execute($eventApplication);
-
 
         $this->assertSame(EventApplicationStatus::REJECTED,
             $result->status);
@@ -60,7 +55,7 @@ class RejectEventApplicationTest extends TestCase
             'title' => 'Test Event',
             'description' => 'This is a test event',
             'organizer_id' => $organizer->id,
-            'participant_limit'=> null,
+            'participant_limit' => null,
             'starts_at' => now()->addDay(),
             'ends_at' => now()->addDays(2),
             'location' => 'Test Location',
@@ -74,5 +69,4 @@ class RejectEventApplicationTest extends TestCase
         ]);
 
     }
-
 }

@@ -20,10 +20,10 @@ return new class extends Migration
 
             $table->dateTime('starts_at');
             $table->dateTime('ends_at');
-            
+
             $table->string('location');
             $table->unsignedInteger('participant_limit')->nullable();
-            
+
             $table->string('status');
 
             $table->timestamps();

@@ -3,10 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Enums\EventApplicationStatus;
+use App\Models\User;
+use App\Models\Event;
 
 class EventApplication extends Model
 {
     //
+    protected $fillable = [
+        'user_id',
+        'status',
+    ];
 
     protected function casts(): array
     {

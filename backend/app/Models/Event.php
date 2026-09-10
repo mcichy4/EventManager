@@ -16,6 +16,7 @@ class Event extends Model
             'status' => EventStatus::class,
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',
+            'application_deadline' => 'datetime',
         ];
     }
 

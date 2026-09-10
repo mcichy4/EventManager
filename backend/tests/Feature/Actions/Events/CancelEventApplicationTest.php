@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Actions;
+namespace Tests\Feature\Actions\Events;
 
 use App\Actions\Events\CancelEventApplication;
 use App\Enums\EventApplicationStatus;

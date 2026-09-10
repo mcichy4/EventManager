@@ -6,8 +6,12 @@ use App\Actions\Events\CreateEvent;
 use App\Data\Events\CreateEventData;
 use App\Http\Requests\CreateEventRequest;
 use App\Models\Organizer;
+use App\Models\Event;
+use App\Actions\Events\UpdateEvent;
+use App\Http\Requests\UpdateEventRequest;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
@@ -28,5 +32,15 @@ class EventController extends Controller
         $event = $action->execute($organizer, $data);
 
         return response()->json($event, 201);
+    }
+
+    public function update(
+        UpdateEventRequest $request,
+        Event $event,
+        UpdateEvent $updateEvent
+    ): JsonResponse {
+        $event = $updateEvent->handle($event, $request->validated());
+
+        return response()->json($event);
     }
 }

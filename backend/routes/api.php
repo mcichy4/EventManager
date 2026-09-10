@@ -12,3 +12,8 @@ Route::post(
     '/organizers/{organizer}/events',
     [EventController::class, 'store']
 )->middleware('auth:sanctum');
+
+Route::patch(
+    "/events/{event}", 
+    [EventController::class, 'update']
+);

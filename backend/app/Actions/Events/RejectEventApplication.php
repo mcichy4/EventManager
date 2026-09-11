@@ -7,6 +7,9 @@ use App\Models\EventApplication;
 
 // use DomainException;
 
+/**
+ * Odrzuca wyłącznie oczekujące zgłoszenie; nie zmienia już podjętych decyzji.
+ */
 class RejectEventApplication
 {
     public function execute(EventApplication $eventApplication): EventApplication

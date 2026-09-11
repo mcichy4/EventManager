@@ -2,16 +2,20 @@
 
 namespace Tests\Feature\Actions\Events;
 
-use App\Enums\EventStatus;
-use App\Models\Event;
 use App\Actions\Events\PublishEvent;
+use App\Enums\EventStatus;
 use App\Enums\OrganizerType;
+use App\Models\Event;
 use App\Models\Organizer;
 use DomainException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
+/**
+ * Sprawdza publikację szkicu i odrzucenie ponownej publikacji lub publikacji anulowanego wydarzenia.
+ * Akcja jest wywoływana bez HTTP: te testy nie sprawdzają logowania ani policy.
+ * RefreshDatabase izoluje dane kolejnych testów; asercje sprawdzają wynik lub oczekiwany wyjątek.
+ */
 class PublishEventTest extends TestCase
 {
     use RefreshDatabase;
@@ -36,8 +40,7 @@ class PublishEventTest extends TestCase
         ]);
     }
 
-
-    public function test_draft_event_can_be_published(): void 
+    public function test_draft_event_can_be_published(): void
     {
         $event = $this->createEvent(EventStatus::DRAFT);
 

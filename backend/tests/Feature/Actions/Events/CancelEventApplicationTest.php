@@ -13,6 +13,11 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/**
+ * Sprawdza wycofanie zgłoszeń pending i accepted oraz odmowę dla rejected i cancelled.
+ * Akcja jest wywoływana bez HTTP: te testy nie sprawdzają logowania ani policy.
+ * RefreshDatabase izoluje dane kolejnych testów; asercje sprawdzają wynik lub oczekiwany wyjątek.
+ */
 class CancelEventApplicationTest extends TestCase
 {
     use RefreshDatabase;

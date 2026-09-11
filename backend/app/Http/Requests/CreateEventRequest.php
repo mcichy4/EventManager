@@ -5,14 +5,18 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Sprawdza członkostwo u organizatora oraz format danych tworzonego wydarzenia.
+ * Zależności między datami sprawdza akcja CreateEvent.
+ */
 class CreateEventRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Tworzyć wydarzenie może członek organizatora wskazanego w trasie.
      */
     public function authorize(): bool
     {
-        // return true;
+        // Route model binding udostępnia tutaj obiekt organizatora, nie samo ID.
         $organizer = $this->route('organizer');
 
         return
@@ -24,7 +28,7 @@ class CreateEventRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Sprawdza wymagane pola i ich typy przed wywołaniem kontrolera.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */

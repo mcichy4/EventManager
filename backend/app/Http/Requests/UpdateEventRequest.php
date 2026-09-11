@@ -5,10 +5,15 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Waliduje dane częściowej aktualizacji. Uprawnienia sprawdza Gate w kontrolerze.
+ * sometimes pozwala pominąć pole, nullable pozwala jawnie przesłać null.
+ * Kolejność dat sprawdza akcja, łącząc nowe wartości z zapisanymi w bazie.
+ */
 class UpdateEventRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Nie blokuje żądania tutaj: właściwą policy wywołuje kontroler przez Gate.
      */
     public function authorize(): bool
     {
@@ -16,7 +21,7 @@ class UpdateEventRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Sprawdza tylko przesłane pola; zależności między datami należą do akcji.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
@@ -26,9 +31,9 @@ class UpdateEventRequest extends FormRequest
             'title' => ['sometimes', 'string', 'max:255'],
             'description' => ['sometimes', 'nullable', 'string'],
             'starts_at' => ['sometimes', 'date'],
-            'ends_at' => ['sometimes', 'date', 'after:starts_at'],
-            'application_deadline' => ['sometimes', 'date', 'before:starts_at'],
-            'participant_limit' => ['sometimes', 'integer', 'min:1'],
+            'ends_at' => ['sometimes', 'date'],
+            'application_deadline' => ['sometimes', 'nullable', 'date'],
+            'participant_limit' => ['sometimes', 'nullable', 'integer', 'min:1'],
             'location' => ['sometimes', 'string', 'max:255'],
         ];
     }

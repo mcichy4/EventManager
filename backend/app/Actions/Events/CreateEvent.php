@@ -7,6 +7,9 @@ use App\Enums\EventStatus;
 use App\Models\Event;
 use App\Models\Organizer;
 
+/**
+ * Tworzy szkic wydarzenia z DTO. Reguły biznesowe obowiązują także przy wywołaniu bez HTTP.
+ */
 final class CreateEvent
 {
     public function execute(
@@ -25,6 +28,8 @@ final class CreateEvent
             throw new \DomainException('Application deadline cannot be after the event starts.');
         }
 
+        // forceCreate omija ochronę mass assignment, dlatego sami budujemy listę zapisywanych pól.
+        // Status początkowy zawsze ustala akcja, a nie dane przekazane przez klienta.
         return Event::forceCreate([
             'organizer_id' => $organizer->id,
             'title' => $data->title,

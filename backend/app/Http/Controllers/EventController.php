@@ -3,20 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Events\CreateEvent;
+use App\Actions\Events\PublishEvent;
+use App\Actions\Events\UpdateEvent;
 use App\Data\Events\CreateEventData;
 use App\Http\Requests\CreateEventRequest;
-use App\Models\Organizer;
-use App\Models\Event;
-use App\Actions\Events\UpdateEvent;
 use App\Http\Requests\UpdateEventRequest;
+use App\Models\Event;
+use App\Models\Organizer;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
+/**
+ * Łączy HTTP z akcjami: odbiera zwalidowane dane, sprawdza uprawnienia i zwraca JSON.
+ * Laravel wstrzykuje akcje oraz modele rozpoznane na podstawie parametrów trasy.
+ */
 class EventController extends Controller
 {
     public function store(CreateEventRequest $request, Organizer $organizer, CreateEvent $action): JsonResponse
     {
+        // Do DTO trafiają tylko zwalidowane pola; daty z HTTP zamieniamy na obiekty.
         $data = new CreateEventData(
             title: $request->validated('title'),
             description: $request->validated('description'),
@@ -31,6 +37,7 @@ class EventController extends Controller
 
         $event = $action->execute($organizer, $data);
 
+        // 201 oznacza utworzenie nowego zasobu, a nie tylko pomyślne wykonanie żądania.
         return response()->json($event, 201);
     }
 
@@ -39,7 +46,20 @@ class EventController extends Controller
         Event $event,
         UpdateEvent $updateEvent
     ): JsonResponse {
+        // Odmowa policy przerywa żądanie kodem 403 przed uruchomieniem akcji.
+        Gate::authorize('update', $event);
+
         $event = $updateEvent->handle($event, $request->validated());
+
+        return response()->json($event);
+    }
+
+    public function publish(Event $event, PublishEvent $publishEvent): JsonResponse
+    {
+        // Policy sprawdza członkostwo, a akcja poniżej sprawdzi status wydarzenia.
+        Gate::authorize('publish', $event);
+
+        $event = $publishEvent->execute($event);
 
         return response()->json($event);
     }

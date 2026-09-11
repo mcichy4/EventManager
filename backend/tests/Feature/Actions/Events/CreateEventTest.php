@@ -10,6 +10,11 @@ use App\Models\Organizer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/**
+ * Sprawdza utworzenie szkicu z DTO oraz reguły dat i limitu uczestników.
+ * Akcja jest wywoływana bez HTTP: te testy nie sprawdzają logowania ani policy.
+ * RefreshDatabase izoluje dane kolejnych testów; asercje sprawdzają wynik lub oczekiwany wyjątek.
+ */
 class CreateEventTest extends TestCase
 {
     use RefreshDatabase;

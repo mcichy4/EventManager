@@ -9,6 +9,9 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/**
+ * Testy tworzenia przez API: poprawne dane, błędy walidacji oraz dostęp do organizatora.
+ */
 class EventControllerTest extends TestCase
 {
     use RefreshDatabase;
@@ -124,7 +127,7 @@ class EventControllerTest extends TestCase
      * Następnie logujemy się jako ten użytkownik i wysyłamy żądanie POST do endpointu /api/organizers/{organizer}/events
      * z danymi wydarzenia, w których termin składania wniosków jest po dacie rozpoczęcia wydarzenia.
      * Oczekujemy, że odpowiedź będzie miała status 422 Unprocessable Entity
-     * i że w odpowiedzi znajdzie się informacja o błędzie walidacji dla pola 'application_deadline'.
+     * i że odpowiedź zawiera message z wyjątku domenowego, a nie errors konkretnego pola.
      */
     public function test_application_deadline_cannot_be_after_event_starts_returns_422(): void
     {

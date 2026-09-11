@@ -2,24 +2,27 @@
 
 namespace Tests\Feature\Actions\Events;
 
+use App\Actions\Events\CancelEvent;
 use App\Enums\EventStatus;
 use App\Enums\OrganizerType;
 use App\Models\Event;
 use App\Models\Organizer;
-use App\Actions\Events\CancelEvent;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
+/**
+ * Sprawdza przejście published → cancelled oraz odrzucenie pozostałych statusów.
+ * Akcja jest wywoływana bez HTTP: te testy nie sprawdzają logowania ani policy.
+ * RefreshDatabase izoluje dane kolejnych testów; asercje sprawdzają wynik lub oczekiwany wyjątek.
+ */
 class CancelEventTest extends TestCase
 {
-
     use RefreshDatabase;
+
     private function createEvent(EventStatus $status): Event
     {
         $organizer = Organizer::forceCreate([
-            'name'=>'Test Organizer',
+            'name' => 'Test Organizer',
             'type' => OrganizerType::COMPANY,
         ]);
 
@@ -36,7 +39,7 @@ class CancelEventTest extends TestCase
         ]);
     }
 
-    public function test_published_event_can_be_cancelled(): void 
+    public function test_published_event_can_be_cancelled(): void
     {
         $event = $this->createEvent(EventStatus::PUBLISHED);
 
@@ -61,5 +64,4 @@ class CancelEventTest extends TestCase
 
         app(CancelEvent::class)->handle($event);
     }
-
 }

@@ -2,16 +2,19 @@
 
 namespace Tests\Feature\Actions\Events;
 
+use App\Actions\Events\DeleteEvent;
 use App\Enums\EventStatus;
 use App\Enums\OrganizerType;
 use App\Models\Event;
 use App\Models\Organizer;
-use App\Actions\Events\DeleteEvent;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
+/**
+ * Sprawdza usunięcie szkicu i ochronę wydarzeń opublikowanych oraz anulowanych.
+ * Akcja jest wywoływana bez HTTP: te testy nie sprawdzają logowania ani policy.
+ * RefreshDatabase izoluje dane kolejnych testów; asercje sprawdzają wynik lub oczekiwany wyjątek.
+ */
 class DeleteEventTest extends TestCase
 {
     use RefreshDatabase;
@@ -20,7 +23,7 @@ class DeleteEventTest extends TestCase
     {
         $organizer = Organizer::forceCreate([
             'name' => 'Test Organizer',
-            'type' => OrganizerType::COMPANY
+            'type' => OrganizerType::COMPANY,
         ]);
 
         return Event::forceCreate([

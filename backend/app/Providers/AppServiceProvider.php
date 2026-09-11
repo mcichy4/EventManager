@@ -4,10 +4,13 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * Miejsce rejestrowania usług i wspólnej konfiguracji aplikacji. Obecnie nie dodaje własnego zachowania.
+ */
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Miejsce na rejestrację zależności w kontenerze usług.
      */
     public function register(): void
     {
@@ -15,7 +18,7 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap any application services.
+     * Miejsce na konfigurację wykonywaną po rejestracji providerów.
      */
     public function boot(): void
     {

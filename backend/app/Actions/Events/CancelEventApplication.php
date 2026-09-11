@@ -6,6 +6,9 @@ use App\Enums\EventApplicationStatus;
 use App\Models\EventApplication;
 use DomainException;
 
+/**
+ * Pozwala wycofać zgłoszenie oczekujące lub zaakceptowane, bez usuwania jego historii z bazy.
+ */
 class CancelEventApplication
 {
     public function execute(EventApplication $eventApplication): EventApplication

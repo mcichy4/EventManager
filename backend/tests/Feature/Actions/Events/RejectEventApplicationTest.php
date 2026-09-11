@@ -13,6 +13,11 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/**
+ * Sprawdza odrzucenie oczekującego zgłoszenia i ochronę zgłoszeń z innym statusem.
+ * Akcja jest wywoływana bez HTTP: te testy nie sprawdzają logowania ani policy.
+ * RefreshDatabase izoluje dane kolejnych testów; asercje sprawdzają wynik lub oczekiwany wyjątek.
+ */
 class RejectEventApplicationTest extends TestCase
 {
     use RefreshDatabase;

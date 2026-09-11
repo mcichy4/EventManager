@@ -9,6 +9,9 @@ use App\Models\EventApplication;
 use App\Models\User;
 use DomainException;
 
+/**
+ * Tworzy oczekujące zgłoszenie na opublikowane, niezakończone wydarzenie, bez ponownego zapisu tego samego użytkownika.
+ */
 class ApplyToEvent
 {
     public function execute(User $user, Event $event): EventApplication
@@ -31,6 +34,8 @@ class ApplyToEvent
         //     'status' => EventApplicationStatus::PENDING,
         // ]);
 
+        // Tworzenie przez relację automatycznie przypisuje event_id tego wydarzenia.
+        // Ta akcja nie sprawdza jeszcze application_deadline.
         return $event->applications()->create([
             'user_id' => $user->id,
             'status' => EventApplicationStatus::PENDING,

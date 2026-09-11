@@ -13,6 +13,11 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/**
+ * Sprawdza akceptację, niedozwolony status, zakończone wydarzenie i wyczerpany limit miejsc.
+ * Akcja jest wywoływana bez HTTP: te testy nie sprawdzają logowania ani policy.
+ * RefreshDatabase izoluje dane kolejnych testów; asercje sprawdzają wynik lub oczekiwany wyjątek.
+ */
 class AcceptEventApplicationTest extends TestCase
 {
     use RefreshDatabase;

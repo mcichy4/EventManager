@@ -7,12 +7,15 @@ use App\Models\EventApplication;
 use DomainException;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Akceptuje oczekujące zgłoszenie po sprawdzeniu zakończenia wydarzenia i liczby zaakceptowanych uczestników.
+ */
 class AcceptEventApplication
 {
     public function execute(EventApplication $eventApplication): EventApplication
     {
-        // Keep the status check, capacity check and update atomic. Re-fetching the
-        // application under a row lock also prevents decisions based on stale state.
+        // Transakcja wycofa zapis w razie wyjątku. Ponownie pobieramy zgłoszenie
+        // z blokadą rekordu, aby nie podejmować decyzji na podstawie starego statusu.
         return DB::transaction(function () use ($eventApplication) {
             $eventApplication = EventApplication::query()
                 ->lockForUpdate()
@@ -22,9 +25,9 @@ class AcceptEventApplication
                 throw new DomainException('Only pending applications can be accepted.');
             }
 
-            // The event is the shared lock for all of its applications. Locking only
-            // one application would let concurrent acceptances observe the same free
-            // slot and both exceed participant_limit.
+            // Wspólna blokada wydarzenia ma chronić limit przy równoległej akceptacji zgłoszeń.
+            // Uwaga: obecne wywołanie na właściwości event wymaga poprawki na zapytanie
+            // relacji event(), aby ograniczyć pobranie do wydarzenia tego zgłoszenia.
             $event = $eventApplication->event
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -33,6 +36,7 @@ class AcceptEventApplication
                 throw new DomainException('Cannot accept applications for finished events.');
             }
 
+            // Miejsca zajmują zaakceptowane zgłoszenia; null oznacza brak limitu.
             if ($event->participant_limit !== null) {
                 $acceptedApplicationsCount = EventApplication::where('event_id', $event->id)
                     ->where('status', EventApplicationStatus::ACCEPTED)

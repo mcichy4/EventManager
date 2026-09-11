@@ -13,6 +13,11 @@ use DomainException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/**
+ * Sprawdza utworzenie zgłoszenia oraz odmowę dla szkicu, zakończonego wydarzenia i ponownego zapisu.
+ * Akcja jest wywoływana bez HTTP: te testy nie sprawdzają logowania ani policy.
+ * RefreshDatabase izoluje dane kolejnych testów; asercje sprawdzają wynik lub oczekiwany wyjątek.
+ */
 class ApplyToEventTest extends TestCase
 {
     use RefreshDatabase;

@@ -28,11 +28,9 @@ class ApplyToEvent
             throw new DomainException('User has already applied to this event.');
         }
 
-        // return EventApplication::create([
-        //     'user_id' => $user->id,
-        //     'event_id' => $event->id,
-        //     'status' => EventApplicationStatus::PENDING,
-        // ]);
+        if ($event->application_deadline && now()->greaterThan($event->application_deadline)) {
+            throw new DomainException('Application deadline has passed for this event.');
+        }
 
         // Tworzenie przez relację automatycznie przypisuje event_id tego wydarzenia.
         // Ta akcja nie sprawdza jeszcze application_deadline.

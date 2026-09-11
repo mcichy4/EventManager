@@ -28,6 +28,10 @@ final class CreateEvent
             throw new \DomainException('Application deadline cannot be after the event starts.');
         }
 
+        if($data->startsAt >=$data->endsAt) {
+            throw new \DomainException('Event cannot start and end at the same time.');
+        }
+
         // forceCreate omija ochronę mass assignment, dlatego sami budujemy listę zapisywanych pól.
         // Status początkowy zawsze ustala akcja, a nie dane przekazane przez klienta.
         return Event::forceCreate([

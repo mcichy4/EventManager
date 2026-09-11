@@ -22,12 +22,40 @@ class AcceptEventApplicationTest extends TestCase
 {
     use RefreshDatabase;
 
+    private function createEventApplication(
+        EventApplicationStatus $status = EventApplicationStatus::PENDING,
+        ?int $participantLimit = null,
+        $startsAt = null,
+        $endsAt = null
+    ): EventApplication {
+        $user = User::factory()->create();
+
+        $organizer = Organizer::forceCreate([
+            'name' => 'Test Organizer',
+            'type' => OrganizerType::COMPANY,
+        ]);
+
+        $event = Event::forceCreate([
+            'organizer_id' => $organizer->id,
+            'title' => 'Test Event',
+            'description' => 'Test Description',
+            'starts_at' => $startsAt ?? now()->addDays(1),
+            'ends_at' => $endsAt ?? now()->addDays(2),
+            'location' => 'Test Location',
+            'participant_limit' => $participantLimit,
+            'status' => EventStatus::PUBLISHED,
+        ]);
+
+        return EventApplication::forceCreate([
+            'event_id' => $event->id,
+            'user_id' => $user->id,
+            'status' => $status,
+        ]);
+    }
+
     public function test_pending_application_can_be_accepted(): void
     {
         $application = $this->createEventApplication();
-        // $application = EventApplication::factory()->create([
-        //     'status' => EventApplicationStatus::PENDING
-        // ]);
 
         $result = app(AcceptEventApplication::class)->execute($application);
 
@@ -76,34 +104,32 @@ class AcceptEventApplicationTest extends TestCase
         app(AcceptEventApplication::class)->execute($application);
     }
 
-    private function createEventApplication(
-        EventApplicationStatus $status = EventApplicationStatus::PENDING,
-        ?int $participantLimit = null,
-        $startsAt = null,
-        $endsAt = null
-    ): EventApplication {
-        $user = User::factory()->create();
+    public function test_capacity_of_another_event_does_not_block_acceptance(): void
+    {
+        $this->createEventApplication(
+        status: EventApplicationStatus::ACCEPTED,    
+        participantLimit: 1
+            );
 
-        $organizer = Organizer::forceCreate([
-            'name' => 'Test Organizer',
-            'type' => OrganizerType::COMPANY,
-        ]);
+        $application = $this->createEventApplication(participantLimit:1);
+        app(AcceptEventApplication::class)->execute($application);
 
-        $event = Event::forceCreate([
-            'organizer_id' => $organizer->id,
-            'title' => 'Test Event',
-            'description' => 'Test Description',
-            'starts_at' => $startsAt ?? now()->addDays(1),
-            'ends_at' => $endsAt ?? now()->addDays(2),
-            'location' => 'Test Location',
-            'participant_limit' => $participantLimit,
-            'status' => EventStatus::PUBLISHED,
+        $this->assertDatabaseHas('event_applications', [
+            'id' => $application->id,
+            'event_id' => $application->event_id,
+            'status' => EventApplicationStatus::ACCEPTED->value,
         ]);
+    }
 
-        return EventApplication::forceCreate([
-            'event_id' => $event->id,
-            'user_id' => $user->id,
-            'status' => $status,
-        ]);
+    public function test_acceptation_cannot_accepted_for_cancelled_event(): void
+    {
+        $application = $this->createEventApplication();
+        $event = $application->event;
+        $event->status = EventStatus::CANCELLED;
+        $event->save();
+
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('Cannot accept applications for events that are not published.');
+        app(AcceptEventApplication::class)->execute($application);
     }
 }

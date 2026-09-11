@@ -19,6 +19,27 @@ class CreateEventTest extends TestCase
 {
     use RefreshDatabase;
 
+    private function createOrganizer(): Organizer
+    {
+        return Organizer::forceCreate([
+            'name' => 'Test Organizer',
+            'type' => OrganizerType::COMPANY,
+        ]);
+    }
+
+    private function createEventData(): CreateEventData
+    {
+        return new CreateEventData(
+            title: 'Test Event',
+            description: 'This is a test event.',
+            startsAt: now()->addDays(10)->toImmutable(),
+            endsAt: now()->addDays(11)->toImmutable(),
+            applicationDeadline: now()->addDays(5)->toImmutable(),
+            participantLimit: 100,
+            location: 'Test Location'
+        );
+    }
+
     public function test_event_can_be_created(): void
     {
         $organizer = Organizer::forceCreate([
@@ -80,6 +101,38 @@ class CreateEventTest extends TestCase
             $organizer,
             $data
         );
+    }
+
+    public function test_event_cannot_ends_at_same_time_as_it_starts(): void
+    {
+        $organizer = $this->createOrganizer();
+        $data = $this->createEventData();
+
+        $data->endsAt = $data->startsAt;
+
+        $this->expectException(\DomainException::class);
+
+        app(CreateEvent::class)->execute(
+            $organizer,
+            $data
+        );
+        
+    }
+
+    public function test_event_cannot_have_ends_at_before_starts_at(): void
+    {
+        $organizer = $this->createOrganizer();
+        $data = $this->createEventData();
+
+        $data->endsAt = $data->startsAt->copy()->subDay();
+
+        $this->expectException(\DomainException::class);
+
+        app(CreateEvent::class)->execute(
+            $organizer,
+            $data
+        );
+        
     }
 
     public function test_event_cannot_have_zero_participant_limit(): void

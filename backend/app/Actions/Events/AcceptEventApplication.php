@@ -6,6 +6,8 @@ use App\Enums\EventApplicationStatus;
 use App\Models\EventApplication;
 use DomainException;
 use Illuminate\Support\Facades\DB;
+use App\Enums\EventStatus;
+
 
 /**
  * Akceptuje oczekujące zgłoszenie po sprawdzeniu zakończenia wydarzenia i liczby zaakceptowanych uczestników.
@@ -28,9 +30,14 @@ class AcceptEventApplication
             // Wspólna blokada wydarzenia ma chronić limit przy równoległej akceptacji zgłoszeń.
             // Uwaga: obecne wywołanie na właściwości event wymaga poprawki na zapytanie
             // relacji event(), aby ograniczyć pobranie do wydarzenia tego zgłoszenia.
-            $event = $eventApplication->event
+            $event = $eventApplication->event()
                 ->lockForUpdate()
                 ->firstOrFail();
+
+
+            if($event->status !== EventStatus::PUBLISHED) {
+                throw new DomainException('Cannot accept applications for events that are not published.');
+            }
 
             if ($event->isFinished()) {
                 throw new DomainException('Cannot accept applications for finished events.');

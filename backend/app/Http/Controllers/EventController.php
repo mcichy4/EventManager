@@ -67,7 +67,10 @@ class EventController extends Controller
 
     public function index(): JsonResponse
     {
-        $events = Event::where('status', EventStatus::PUBLISHED->value)->get();
+        $events = Event::query()
+        ->where('status', EventStatus::PUBLISHED->value)
+        ->orderBy('id')->paginate(10);
+
         return response()->json($events);
     }
 

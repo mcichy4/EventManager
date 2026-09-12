@@ -91,4 +91,40 @@ class ListEventsTest extends TestCase
 
         }
 
+            public function test_public_event_list_is_paginated(): void
+    {
+        $organizer = $this->createOrganizer();
+        for($i = 0; $i<15; $i++) {
+            $this->createEvent(EventStatus::PUBLISHED);
+        }
+
+        $response = $this->getJson("/api/events");
+
+        $response->assertOk();
+        $response->assertJsonCount(10, 'data');
+        $response->assertJsonPath('total', 15);
+        $response->assertJsonPath('per_page', 10);
+        $response->assertJsonPath('current_page', 1);
+        
+        $response = $this->getJson("/api/events?page=2");
+        $response->assertOk();
+        $response->assertJsonCount(5, 'data');
+        $response->assertJsonPath('current_page', 2);
+    }
+
+    public function test_pagination_total_count_excludes_draft_and_canceled_events(): void
+    {
+        for($i = 0; $i<2; $i++) {
+            $this->createEvent(EventStatus::PUBLISHED);
+        }
+
+        $this->createEvent(EventStatus::DRAFT);
+        $this->createEvent(EventStatus::CANCELLED);
+
+        $response = $this->getJson("/api/events");
+
+        $response->assertOk();
+        $response->assertJsonCount(2, 'data');
+        $response->assertJsonPath('total', 2);
+    }
     }

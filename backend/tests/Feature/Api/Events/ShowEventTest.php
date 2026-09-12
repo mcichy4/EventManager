@@ -2,13 +2,11 @@
 
 namespace Tests\Feature\Api\Events;
 
-use App\Models\Organizer;
-use App\Models\Event;
-use App\Enums\OrganizerType;
 use App\Enums\EventStatus;
-
+use App\Enums\OrganizerType;
+use App\Models\Event;
+use App\Models\Organizer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class ShowEventTest extends TestCase
@@ -56,7 +54,7 @@ class ShowEventTest extends TestCase
     {
         $organizer = $this->createOrganizer();
         $event = $this->createEvent($organizer, EventStatus::DRAFT);
-        
+
         $response = $this->getJson("/api/events/{$event->id}");
 
         $response->assertNotFound();
@@ -66,15 +64,15 @@ class ShowEventTest extends TestCase
     {
         $organizer = $this->createOrganizer();
         $event = $this->createEvent($organizer, EventStatus::CANCELLED);
-        
+
         $response = $this->getJson("/api/events/{$event->id}");
-        
+
         $response->assertNotFound();
     }
 
     public function test_guest_cannot_show_nonexistent_event(): void
     {
-        $response = $this->getJson("/api/events/999999");
+        $response = $this->getJson('/api/events/999999');
 
         $response->assertNotFound();
     }

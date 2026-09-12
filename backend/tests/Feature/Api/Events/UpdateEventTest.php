@@ -295,7 +295,7 @@ class UpdateEventTest extends TestCase
         $event = $this->createEvent(EventStatus::DRAFT);
         $event->organizer->users()->attach($user);
         $this->actingAs($user);
-        
+
         $response = $this->patchJson(
             "/api/events/{$event->id}", [
                 'ends_at' => $event->starts_at->toDateTimeString(),
@@ -329,6 +329,6 @@ class UpdateEventTest extends TestCase
             'starts_at' => $event->starts_at,
             'ends_at' => $event->ends_at,
         ]);
-        
+
     }
 }

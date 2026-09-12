@@ -149,7 +149,7 @@ class AcceptEventApplicationTest extends TestCase
     public function test_application_cannot_be_accepted_when_status_is_rejected(): void
     {
         $application = $this->createEventApplication(EventApplicationStatus::REJECTED);
-        
+
         $this->expectException(\DomainException::class);
         $this->expectExceptionMessage('Only pending applications can be accepted.');
 
@@ -159,10 +159,10 @@ class AcceptEventApplicationTest extends TestCase
     public function test_application_cannot_be_accepted_when_status_is_cancelled(): void
     {
         $application = $this->createEventApplication(EventApplicationStatus::CANCELLED);
-        
+
         $this->expectException(\DomainException::class);
         $this->expectExceptionMessage('Only pending applications can be accepted.');
-        
+
         app(AcceptEventApplication::class)->execute($application);
     }
 
@@ -203,7 +203,7 @@ class AcceptEventApplicationTest extends TestCase
         ]);
 
         $this->assertDatabaseHas('event_applications', [
-            'id' =>$application2->id,
+            'id' => $application2->id,
             'status' => EventApplicationStatus::REJECTED->value,
         ]);
     }
@@ -212,7 +212,7 @@ class AcceptEventApplicationTest extends TestCase
     {
         $application1 = $this->createEventApplication(participantLimit: 1);
         $application2 = EventApplication::forceCreate([
-            'event_id' =>$application1->event_id,
+            'event_id' => $application1->event_id,
             'user_id' => User::factory()->create()->id,
             'status' => EventApplicationStatus::CANCELLED,
         ]);
@@ -222,7 +222,7 @@ class AcceptEventApplicationTest extends TestCase
             'id' => $application1->id,
             'status' => EventApplicationStatus::ACCEPTED->value,
         ]);
-        
+
         $this->assertDatabaseHas('event_applications', [
             'id' => $application2->id,
             'status' => EventApplicationStatus::CANCELLED->value,

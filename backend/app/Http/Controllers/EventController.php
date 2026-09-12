@@ -6,13 +6,14 @@ use App\Actions\Events\CreateEvent;
 use App\Actions\Events\PublishEvent;
 use App\Actions\Events\UpdateEvent;
 use App\Data\Events\CreateEventData;
+use App\Enums\EventStatus;
 use App\Http\Requests\CreateEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
 use App\Models\Organizer;
-use App\Enums\EventStatus;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 /**
@@ -65,23 +66,29 @@ class EventController extends Controller
         return response()->json($event);
     }
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $events = Event::query()
-        ->where('status', EventStatus::PUBLISHED->value)
-        ->orderBy('id')->paginate(10);
+        $query = Event::query()
+            ->where('status', EventStatus::PUBLISHED->value);
+
+        $search = $request->query('search');
+        if (is_string($search) && $search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%");
+            });
+        }
+
+        $events = $query->orderBy('id')->paginate(10);
 
         return response()->json($events);
     }
 
     public function show(Event $event): JsonResponse
     {
-        if($event->status !== EventStatus::PUBLISHED) {
+        if ($event->status !== EventStatus::PUBLISHED) {
             abort(404, 'Event not found');
         }
 
         return response()->json($event);
     }
-
-
 }

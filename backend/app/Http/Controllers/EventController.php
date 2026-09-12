@@ -10,6 +10,7 @@ use App\Http\Requests\CreateEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
 use App\Models\Organizer;
+use App\Enums\EventStatus;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
@@ -63,4 +64,21 @@ class EventController extends Controller
 
         return response()->json($event);
     }
+
+    public function index(): JsonResponse
+    {
+        $events = Event::where('status', EventStatus::PUBLISHED->value)->get();
+        return response()->json($events);
+    }
+
+    public function show(Event $event): JsonResponse
+    {
+        if($event->status !== EventStatus::PUBLISHED) {
+            abort(404, 'Event not found');
+        }
+
+        return response()->json($event);
+    }
+
+
 }

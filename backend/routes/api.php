@@ -27,3 +27,6 @@ Route::post(
     '/events/{event}/publish',
     [EventController::class, 'publish']
 )->middleware('auth:sanctum');
+
+Route::get('/events', [EventController::class, 'index']);
+Route::get('/events/{event}', [EventController::class, 'show']);

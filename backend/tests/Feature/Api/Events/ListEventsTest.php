@@ -188,4 +188,48 @@ class ListEventsTest extends TestCase
             'id' => $event2->id,
         ]);
     }
+
+    public function test_next_page_link_preserves_search(): void
+    {
+        for ($i = 0; $i < 15; $i++) {
+            $this->createEvent(EventStatus::PUBLISHED);
+        }
+
+        $specialEvent = Event::forceCreate([
+            'organizer_id' => $this->createOrganizer()->id,
+            'title' => 'Special Event',
+            'description' => 'Event Description',
+            'starts_at' => now()->addDays(10),
+            'ends_at' => now()->addDays(11),
+            'application_deadline' => now()->addDays(4),
+            'location' => 'Event Location',
+            'participant_limit' => 100,
+            'status' => EventStatus::PUBLISHED,
+        ]);
+
+        $response = $this->getJson('/api/events?search=Title');
+
+        $response->assertOk();
+        $response->assertJsonPath('total', 15);
+        $response->assertJsonCount(10, 'data');
+        $nextResponse = $response->json('next_page_url');
+        $this->assertNotNull($nextResponse);
+        $secondResponse = $this->getJson($nextResponse);
+        $secondResponse->assertOk();
+        $secondResponse->assertJsonCount(5, 'data');
+        $secondResponse->assertJsonPath('total', 15);
+        $secondResponse->assertJsonPath('current_page', 2);
+        $secondResponse->assertJsonMissing(['id' => $specialEvent->id]);
+    }
+
+    public function test_search_returns_empty_list_when_nothing_matches(): void
+    {
+        $this->createEvent(EventStatus::PUBLISHED);
+
+        $response = $this->getJson('/api/events?search=NieistniejacyTytul');
+
+        $response->assertOk();
+        $response->assertJsonCount(0, 'data');
+        $response->assertJsonPath('total', 0);
+    }
 }

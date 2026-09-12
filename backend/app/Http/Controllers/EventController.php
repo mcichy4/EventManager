@@ -78,7 +78,12 @@ class EventController extends Controller
             });
         }
 
-        $events = $query->orderBy('id')->paginate(10);
+        $events = $query
+            ->orderBy('id')
+            ->paginate(10)
+            ->appends([
+                'search' => $search,
+            ]);
 
         return response()->json($events);
     }

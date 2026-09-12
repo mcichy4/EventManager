@@ -116,7 +116,7 @@ class CreateEventTest extends TestCase
             $organizer,
             $data
         );
-        
+
     }
 
     public function test_event_cannot_have_ends_at_before_starts_at(): void
@@ -132,7 +132,7 @@ class CreateEventTest extends TestCase
             $organizer,
             $data
         );
-        
+
     }
 
     public function test_event_cannot_have_zero_participant_limit(): void
@@ -206,7 +206,7 @@ class CreateEventTest extends TestCase
             $data
         );
 
-        $this->assertNull($event->participantLimit);
+        $this->assertNull($event->participant_limit);
     }
 
     public function test_event_can_have_null_application_deadline(): void
@@ -231,7 +231,7 @@ class CreateEventTest extends TestCase
             $data
         );
 
-        $this->assertNull($event->applicationDeadline);
+        $this->assertNull($event->application_deadline);
     }
 
     public function test_event_cannot_have_application_deadline_after_start_date(): void

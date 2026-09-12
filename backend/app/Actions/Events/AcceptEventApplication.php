@@ -3,11 +3,10 @@
 namespace App\Actions\Events;
 
 use App\Enums\EventApplicationStatus;
+use App\Enums\EventStatus;
 use App\Models\EventApplication;
 use DomainException;
 use Illuminate\Support\Facades\DB;
-use App\Enums\EventStatus;
-
 
 /**
  * Akceptuje oczekujące zgłoszenie po sprawdzeniu zakończenia wydarzenia i liczby zaakceptowanych uczestników.
@@ -34,8 +33,7 @@ class AcceptEventApplication
                 ->lockForUpdate()
                 ->firstOrFail();
 
-
-            if($event->status !== EventStatus::PUBLISHED) {
+            if ($event->status !== EventStatus::PUBLISHED) {
                 throw new DomainException('Cannot accept applications for events that are not published.');
             }
 

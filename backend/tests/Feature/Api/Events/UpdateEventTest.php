@@ -287,6 +287,48 @@ class UpdateEventTest extends TestCase
             'starts_at' => $event->starts_at,
             'ends_at' => $event->ends_at,
         ]);
+    }
 
+    public function test_event_starts_at_cannot_be_equal_to_ends_at_via_api(): void
+    {
+        $user = User::factory()->create();
+        $event = $this->createEvent(EventStatus::DRAFT);
+        $event->organizer->users()->attach($user);
+        $this->actingAs($user);
+        
+        $response = $this->patchJson(
+            "/api/events/{$event->id}", [
+                'ends_at' => $event->starts_at->toDateTimeString(),
+            ]
+        );
+
+        $response->assertUnprocessable();
+        $this->assertDatabaseHas('events', [
+            'id' => $event->id,
+            'starts_at' => $event->starts_at,
+            'ends_at' => $event->ends_at,
+        ]);
+    }
+
+    public function test_start_after_existing_end_is_rejected_via_api(): void
+    {
+        $user = User::factory()->create();
+        $event = $this->createEvent(EventStatus::DRAFT);
+        $event->organizer->users()->attach($user);
+        $this->actingAs($user);
+
+        $response = $this->patchJson(
+            "/api/events/{$event->id}", [
+                'starts_at' => $event->ends_at->copy()->addDay()->toDateTimeString(),
+            ]
+        );
+
+        $response->assertUnprocessable();
+        $this->assertDatabaseHas('events', [
+            'id' => $event->id,
+            'starts_at' => $event->starts_at,
+            'ends_at' => $event->ends_at,
+        ]);
+        
     }
 }

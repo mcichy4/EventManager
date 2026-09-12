@@ -28,7 +28,7 @@ final class CreateEvent
             throw new \DomainException('Application deadline cannot be after the event starts.');
         }
 
-        if($data->startsAt >=$data->endsAt) {
+        if ($data->startsAt >= $data->endsAt) {
             throw new \DomainException('Event cannot start and end at the same time.');
         }
 

@@ -44,8 +44,6 @@ class ApplyToEventTest extends TestCase
         ]);
     }
 
-
-
     public function test_user_can_apply_to_published_event(): void
     {
         $user = User::factory()->create();
@@ -80,7 +78,7 @@ class ApplyToEventTest extends TestCase
 
         $this->assertEquals($user->id, $application->user_id);
         $this->assertEquals($event->id,
-        $application->event_id);
+            $application->event_id);
         $this->assertSame(EventApplicationStatus::PENDING, $application->status);
 
         $this->assertDatabaseHas('event_applications', [
@@ -105,11 +103,9 @@ class ApplyToEventTest extends TestCase
     {
         $user = User::factory()->create();
 
-
         $event = $this->createEvent(EventStatus::PUBLISHED);
         $event->ends_at = now()->subDay();
         $event->save();
-
 
         $this->expectException(DomainException::class);
 
@@ -126,9 +122,8 @@ class ApplyToEventTest extends TestCase
         $action->execute($user, $event);
         $this->expectException(DomainException::class);
         $this->expectExceptionMessage('User has already applied to this event.');
-        
-        $action->execute($user, $event);
 
+        $action->execute($user, $event);
 
     }
 
@@ -140,9 +135,9 @@ class ApplyToEventTest extends TestCase
         $event->application_deadline = now()->subDay();
         $event->save();
 
-        $this->expectException(\DomainException::class);
+        $this->expectException(DomainException::class);
         $this->expectExceptionMessage('Application deadline has passed for this event.');
- 
+
         app(ApplyToEvent::class)->execute($user, $event);
     }
 }

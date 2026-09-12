@@ -107,11 +107,11 @@ class AcceptEventApplicationTest extends TestCase
     public function test_capacity_of_another_event_does_not_block_acceptance(): void
     {
         $this->createEventApplication(
-        status: EventApplicationStatus::ACCEPTED,    
-        participantLimit: 1
-            );
+            status: EventApplicationStatus::ACCEPTED,
+            participantLimit: 1
+        );
 
-        $application = $this->createEventApplication(participantLimit:1);
+        $application = $this->createEventApplication(participantLimit: 1);
         app(AcceptEventApplication::class)->execute($application);
 
         $this->assertDatabaseHas('event_applications', [
@@ -131,5 +131,101 @@ class AcceptEventApplicationTest extends TestCase
         $this->expectException(\DomainException::class);
         $this->expectExceptionMessage('Cannot accept applications for events that are not published.');
         app(AcceptEventApplication::class)->execute($application);
+    }
+
+    public function test_application_cannot_be_accepted_for_draft_event(): void
+    {
+        $application = $this->createEventApplication();
+        $event = $application->event;
+        $event->status = EventStatus::DRAFT;
+        $event->save();
+
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('Cannot accept applications for events that are not published.');
+
+        app(AcceptEventApplication::class)->execute($application);
+    }
+
+    public function test_application_cannot_be_accepted_when_status_is_rejected(): void
+    {
+        $application = $this->createEventApplication(EventApplicationStatus::REJECTED);
+        
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('Only pending applications can be accepted.');
+
+        app(AcceptEventApplication::class)->execute($application);
+    }
+
+    public function test_application_cannot_be_accepted_when_status_is_cancelled(): void
+    {
+        $application = $this->createEventApplication(EventApplicationStatus::CANCELLED);
+        
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('Only pending applications can be accepted.');
+        
+        app(AcceptEventApplication::class)->execute($application);
+    }
+
+    public function test_pending_application_do_not_take_up_capacity(): void
+    {
+        $application1 = $this->createEventApplication(participantLimit: 1);
+        $application2 = EventApplication::forceCreate([
+            'event_id' => $application1->event_id,
+            'user_id' => User::factory()->create()->id,
+            'status' => EventApplicationStatus::PENDING,
+        ]);
+
+        app(AcceptEventApplication::class)->execute($application1);
+        $this->assertDatabaseHas('event_applications', [
+            'id' => $application1->id,
+            'status' => EventApplicationStatus::ACCEPTED->value,
+        ]);
+
+        $this->assertDatabaseHas('event_applications', [
+            'id' => $application2->id,
+            'status' => EventApplicationStatus::PENDING->value,
+        ]);
+    }
+
+    public function test_rejected_application_do_not_take_up_capacity(): void
+    {
+        $application1 = $this->createEventApplication(participantLimit: 1);
+        $application2 = EventApplication::forceCreate([
+            'event_id' => $application1->event_id,
+            'user_id' => User::factory()->create()->id,
+            'status' => EventApplicationStatus::REJECTED,
+        ]);
+
+        app(AcceptEventApplication::class)->execute($application1);
+        $this->assertDatabaseHas('event_applications', [
+            'id' => $application1->id,
+            'status' => EventApplicationStatus::ACCEPTED->value,
+        ]);
+
+        $this->assertDatabaseHas('event_applications', [
+            'id' =>$application2->id,
+            'status' => EventApplicationStatus::REJECTED->value,
+        ]);
+    }
+
+    public function test_cancelled_application_do_not_take_up_capacity(): void
+    {
+        $application1 = $this->createEventApplication(participantLimit: 1);
+        $application2 = EventApplication::forceCreate([
+            'event_id' =>$application1->event_id,
+            'user_id' => User::factory()->create()->id,
+            'status' => EventApplicationStatus::CANCELLED,
+        ]);
+
+        app(AcceptEventApplication::class)->execute($application1);
+        $this->assertDatabaseHas('event_applications', [
+            'id' => $application1->id,
+            'status' => EventApplicationStatus::ACCEPTED->value,
+        ]);
+        
+        $this->assertDatabaseHas('event_applications', [
+            'id' => $application2->id,
+            'status' => EventApplicationStatus::CANCELLED->value,
+        ]);
     }
 }

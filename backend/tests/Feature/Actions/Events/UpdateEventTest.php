@@ -243,4 +243,16 @@ class UpdateEventTest extends TestCase
         $event->refresh();
 
     }
+
+    public function test_event_ends_at_cannot_be_set_to_same_as_starts_at(): void
+    {
+        $event = $this->createOldEventData(EventStatus::DRAFT);
+        
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('The starts at must be a date before ends at.');
+    
+        app(UpdateEvent::class)->handle($event, [
+            'ends_at' => $event->starts_at,
+        ]);
+        }
 }

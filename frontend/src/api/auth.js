@@ -7,8 +7,14 @@ export const login = async ({ email, password }) => {
     email,
     password,
   });
+  return getCurrentUser();
+};
 
+export const getCurrentUser = async () => {
   const response = await http.get("/api/user");
-
   return response.data;
+};
+
+export const logout = async () => {
+  await http.post("/logout");
 };

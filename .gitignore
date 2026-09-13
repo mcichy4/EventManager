@@ -15,3 +15,5 @@
 
 # Docker local overrides
 docker-compose.override.yml
+
+PROGRESS.md

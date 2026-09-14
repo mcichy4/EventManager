@@ -2,29 +2,18 @@
 
 namespace Tests\Feature\Policies;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
-
-use App\Models\User;
-use App\Models\Organizer;
-use App\Models\Event;
-use App\Models\EventApplication;
-use App\Actions\Events\CancelEventApplication;
-use App\Actions\Events\AcceptEventApplication;
-use App\Actions\Events\RejectEventApplication;
 use App\Enums\EventApplicationStatus;
 use App\Enums\EventStatus;
-use Illuminate\Support\Facades\Gate;
-
 use App\Enums\OrganizerType;
-
-use Illuminate\Auth\Access\AuthorizationException;
-
+use App\Models\Event;
+use App\Models\EventApplication;
+use App\Models\Organizer;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class EventApplicationPolicyTest extends TestCase
 {
-
     use RefreshDatabase;
 
     private function createOrganizer(): Organizer
@@ -35,7 +24,7 @@ class EventApplicationPolicyTest extends TestCase
         ]);
     }
 
-    private function createEvent(Organizer $organizer): Event 
+    private function createEvent(Organizer $organizer): Event
     {
         return Event::forceCreate([
             'organizer_id' => $organizer->id,
@@ -62,17 +51,15 @@ class EventApplicationPolicyTest extends TestCase
     public function test_user_can_cancel_own_event_application(): void
     {
         $user = User::factory()->create();
-        $event=  $this->createEvent($this->createOrganizer());
+        $event = $this->createEvent($this->createOrganizer());
         $eventApplication = $this->createEventApplication($user, $event);
         $user2 = User::factory()->create();
         $this->assertFalse($user2->can('cancel', $eventApplication));
-       $this->assertTrue($user->can('cancel', $eventApplication));
-       }
-
+        $this->assertTrue($user->can('cancel', $eventApplication));
+    }
 
     /**
      * @test
-     * @return void
      */
     public function test_user_cannot_cancel_others_event_application(): void
     {
@@ -80,7 +67,7 @@ class EventApplicationPolicyTest extends TestCase
         $user2 = User::factory()->create();
         $event = $this->createEvent($this->createOrganizer());
         $eventApplication = $this->createEventApplication($user1, $event);
-        
+
         $this->assertTrue($user1->can('cancel', $eventApplication));
         $this->assertFalse($user2->can('cancel', $eventApplication));
     }
@@ -116,7 +103,7 @@ class EventApplicationPolicyTest extends TestCase
         $eventApplication = $this->createEventApplication($user2, $event);
         $otherOrganizer = $this->createOrganizer();
         $otherOrganizer->users()->attach($user1->id);
-    
+
         $this->assertFalse($user1->can('accept', $eventApplication));
     }
 
@@ -131,5 +118,4 @@ class EventApplicationPolicyTest extends TestCase
         $otherOrganizer->users()->attach($user1->id);
         $this->assertFalse($user1->can('reject', $eventApplication));
     }
-
 }

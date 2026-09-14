@@ -30,3 +30,9 @@ Route::post(
 
 Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/{event}', [EventController::class, 'show']);
+
+Route::post('/events/{event}/applications', [EventController::class, 'apply'])->middleware('auth:sanctum');
+Route::delete('/event-applications/{eventApplication}', [EventController::class, 'cancelApplication'])->middleware('auth:sanctum');
+Route::post('/event-applications/{eventApplication}/accept', [EventController::class, 'acceptApplication'])->middleware('auth:sanctum');
+Route::post('/event-applications/{eventApplication}/reject', [EventController::class, 'rejectApplication'])->middleware('auth:sanctum');
+Route::get('/me/event-applications', [EventController::class, 'myApplications'])->middleware('auth:sanctum');

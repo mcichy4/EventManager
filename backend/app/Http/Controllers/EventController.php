@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Events\AcceptEventApplication;
+use App\Actions\Events\ApplyToEvent;
+use App\Actions\Events\CancelEventApplication;
 use App\Actions\Events\CreateEvent;
 use App\Actions\Events\PublishEvent;
+use App\Actions\Events\RejectEventApplication;
 use App\Actions\Events\UpdateEvent;
 use App\Data\Events\CreateEventData;
 use App\Enums\EventStatus;
 use App\Http\Requests\CreateEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
+use App\Models\EventApplication;
 use App\Models\Organizer;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
@@ -95,5 +100,62 @@ class EventController extends Controller
         }
 
         return response()->json($event);
+    }
+
+    public function apply(Request $request, Event $event, ApplyToEvent $applyToEvent): JsonResponse
+    {
+        Gate::authorize('apply', $event);
+
+        $user = $request->user();
+        if (! $user) {
+            abort(401, 'Unauthorized');
+        }
+
+        $result = $applyToEvent->execute($user, $event);
+
+        return response()->json($result, 201);
+
+    }
+
+    public function cancelApplication(EventApplication $eventApplication, CancelEventApplication $cancelEventApplication): JsonResponse
+    {
+        Gate::authorize('cancel', $eventApplication);
+
+        $cancelEventApplication->execute($eventApplication);
+
+        return response()->json(['message' => 'Application canceled successfully.']);
+    }
+
+    public function acceptApplication(EventApplication $eventApplication, AcceptEventApplication $acceptEventApplication): JsonResponse
+    {
+        Gate::authorize('accept', $eventApplication);
+
+        $acceptEventApplication->execute($eventApplication);
+
+        return response()->json(['message' => 'Application accepted successfully.']);
+    }
+
+    public function rejectApplication(EventApplication $eventApplication, RejectEventApplication $rejectEventApplication): JsonResponse
+    {
+        Gate::authorize('reject', $eventApplication);
+
+        $rejectEventApplication->execute($eventApplication);
+
+        return response()->json(['message' => 'Application rejected successfully.']);
+    }
+
+    public function myApplications(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        if (! $user) {
+            abort(401, 'Unauthorized');
+        }
+
+        $applications = EventApplication::where('user_id', $user->id)
+            ->with('event.organizer')
+            ->latest()
+            ->get();
+
+        return response()->json($applications);
     }
 }

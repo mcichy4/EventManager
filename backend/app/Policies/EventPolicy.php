@@ -76,4 +76,9 @@ class EventPolicy
             ->whereKey($event->organizer_id)
             ->exists();
     }
+
+    public function apply(User $user, Event $event): bool
+    {
+        return true;
+    }
 }

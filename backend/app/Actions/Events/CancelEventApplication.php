@@ -13,6 +13,7 @@ class CancelEventApplication
 {
     public function execute(EventApplication $eventApplication): EventApplication
     {
+
         if (! in_array($eventApplication->status, [
             EventApplicationStatus::PENDING,
             EventApplicationStatus::ACCEPTED,

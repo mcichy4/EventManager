@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\EventApplication;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class EventApplicationPolicy
 {
@@ -16,14 +15,14 @@ class EventApplicationPolicy
     public function accept(User $user, EventApplication $eventApplication): bool
     {
         return $user->organizers()
-        ->whereKey($eventApplication->event->organizer_id)
-        ->exists();
+            ->whereKey($eventApplication->event->organizer_id)
+            ->exists();
     }
 
     public function reject(User $user, EventApplication $eventApplication): bool
     {
         return $user->organizers()
-        ->whereKey($eventApplication->event->organizer_id)
-        ->exists();
+            ->whereKey($eventApplication->event->organizer_id)
+            ->exists();
     }
 }

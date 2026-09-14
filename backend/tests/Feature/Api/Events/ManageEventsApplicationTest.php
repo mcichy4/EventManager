@@ -176,4 +176,70 @@ class ManageEventsApplicationTest extends TestCase
             'status' => EventApplicationStatus::REJECTED->value,
         ]);
     }
+
+    public function test_guest_cannot_accept_event_application(): void
+    {
+        $user = User::factory()->create();
+        $organizer = $this->createOrganizer();
+        $event = $this->createEvent($organizer);
+
+        $eventApplication = EventApplication::forceCreate([
+            'user_id' => $user->id,
+            'event_id' => $event->id,
+            'status' => EventApplicationStatus::PENDING->value,
+        ]);
+
+        $this->postJson("/api/event-applications/{$eventApplication->id}/accept")
+            ->assertUnauthorized();
+
+        $this->assertDatabaseMissing('event_applications', [
+            'user_id' => $user->id,
+            'event_id' => $event->id,
+            'status' => EventApplicationStatus::ACCEPTED->value,
+        ]);
+    }
+
+    public function test_guest_cannot_reject_event_application(): void
+    {
+        $user = User::factory()->create();
+        $organizer = $this->createOrganizer();
+        $event = $this->createEvent($organizer);
+
+        $eventApplication = EventApplication::forceCreate([
+            'user_id' => $user->id,
+            'event_id' => $event->id,
+            'status' => EventApplicationStatus::PENDING->value,
+        ]);
+
+        $this->postJson("/api/event-applications/{$eventApplication->id}/reject")
+            ->assertUnauthorized();
+
+        $this->assertDatabaseMissing('event_applications', [
+            'user_id' => $user->id,
+            'event_id' => $event->id,
+            'status' => EventApplicationStatus::REJECTED->value,
+        ]);
+    }
+
+    public function test_guest_cannot_delete_event_application(): void
+    {
+        $user = User::factory()->create();
+        $organizer = $this->createOrganizer();
+        $event = $this->createEvent($organizer);
+
+        $eventApplication = EventApplication::forceCreate([
+            'user_id' => $user->id,
+            'event_id' => $event->id,
+            'status' => EventApplicationStatus::PENDING->value,
+        ]);
+
+        $this->deleteJson("/api/event-applications/{$eventApplication->id}")
+            ->assertUnauthorized();
+
+        $this->assertDatabaseHas('event_applications', [
+            'user_id' => $user->id,
+            'event_id' => $event->id,
+            'status' => EventApplicationStatus::PENDING->value,
+        ]);
+    }
 }

@@ -15,6 +15,12 @@ RUN apt-get update \
         pdo \
         pdo_pgsql \
         zip \
+    && pecl install pcov \
+    && docker-php-ext-enable pcov \
+    && { \
+        echo 'pcov.enabled=1'; \
+        echo 'pcov.directory=/var/www/backend/app'; \
+    } > "${PHP_INI_DIR}/conf.d/99-pcov.ini" \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

@@ -81,4 +81,11 @@ class EventPolicy
     {
         return true;
     }
+
+    public function cancel(User $user, Event $event): bool
+    {
+        return $user->organizers()
+            ->whereKey($event->organizer_id)
+            ->exists();
+    }
 }

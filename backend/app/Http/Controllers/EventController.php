@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Events\AcceptEventApplication;
 use App\Actions\Events\ApplyToEvent;
+use App\Actions\Events\CancelEvent;
 use App\Actions\Events\CancelEventApplication;
 use App\Actions\Events\CreateEvent;
 use App\Actions\Events\PublishEvent;
@@ -157,5 +158,14 @@ class EventController extends Controller
             ->get();
 
         return response()->json($applications);
+    }
+
+    public function cancelEvent(Event $event, CancelEvent $cancelEvent): JsonResponse
+    {
+        Gate::authorize('cancel', $event);
+
+        $cancelEvent->handle($event);
+
+        return response()->json($event);
     }
 }

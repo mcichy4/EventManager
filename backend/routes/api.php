@@ -30,7 +30,7 @@ Route::post(
 
 Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/{event}', [EventController::class, 'show']);
-
+Route::post('/events/{event}/cancel', [EventController::class, 'cancelEvent'])->middleware('auth:sanctum');
 Route::post('/events/{event}/applications', [EventController::class, 'apply'])->middleware('auth:sanctum');
 Route::delete('/event-applications/{eventApplication}', [EventController::class, 'cancelApplication'])->middleware('auth:sanctum');
 Route::post('/event-applications/{eventApplication}/accept', [EventController::class, 'acceptApplication'])->middleware('auth:sanctum');

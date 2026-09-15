@@ -50,7 +50,9 @@ class EventPolicy
      */
     public function delete(User $user, Event $event): bool
     {
-        return false;
+        return $user->organizers()
+            ->whereKey($event->organizer_id)
+            ->exists();
     }
 
     /**

@@ -7,6 +7,7 @@ use App\Actions\Events\ApplyToEvent;
 use App\Actions\Events\CancelEvent;
 use App\Actions\Events\CancelEventApplication;
 use App\Actions\Events\CreateEvent;
+use App\Actions\Events\DeleteEvent;
 use App\Actions\Events\PublishEvent;
 use App\Actions\Events\RejectEventApplication;
 use App\Actions\Events\UpdateEvent;
@@ -167,5 +168,14 @@ class EventController extends Controller
         $cancelEvent->handle($event);
 
         return response()->json($event);
+    }
+
+    public function destroy(Event $event, DeleteEvent $deleteEvent): JsonResponse
+    {
+        Gate::authorize('delete', $event);
+
+        $deleteEvent->handle($event);
+
+        return response()->json(null, 204);
     }
 }

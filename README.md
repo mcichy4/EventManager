@@ -167,6 +167,12 @@ Run Composer:
 docker compose exec php composer install
 ```
 
+Or use the helper script, which starts the PHP service when necessary:
+
+```bash
+./scripts/composer-install.sh
+```
+
 Install a Composer package:
 
 ```bash

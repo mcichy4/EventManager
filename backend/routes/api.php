@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\OrganizerController;
 use App\Http\Controllers\EventController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +28,8 @@ Route::post(
     '/events/{event}/publish',
     [EventController::class, 'publish']
 )->middleware('auth:sanctum');
+
+Route::post('/organizers', [OrganizerController::class, 'store'])->middleware('auth:sanctum');
 
 Route::get('/events', [EventController::class, 'index']);
 Route::delete('/events/{event}', [EventController::class, 'destroy'])->middleware('auth:sanctum');

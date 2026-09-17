@@ -24,7 +24,10 @@ class Organizer extends Model
     // Powiązania są w tabeli organizer_user; withTimestamps zapisuje daty członkostwa w pivot.
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class)->withTimestamps();
+        return $this
+        ->belongsToMany(User::class)
+        ->withPivot('role')
+        ->withTimestamps();
     }
 
     public function events(): HasMany

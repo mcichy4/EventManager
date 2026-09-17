@@ -7,8 +7,11 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests\CreateOrganizerRequest;
 use App\Actions\Organizers\CreateOrganizer;
-
+use App\Actions\Organizers\AddOrganizerMember;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\JsonResponse;
+use App\Models\User;
+use App\Http\Requests\AddOrganizerMemberRequest;
 
 class OrganizerController extends Controller
 {
@@ -73,5 +76,15 @@ class OrganizerController extends Controller
     public function destroy(Organizer $organizer)
     {
         //
+    }
+
+    public function addMember(AddOrganizerMemberRequest $request, AddOrganizerMember $addOrganizerMember, Organizer $organizer): JsonResponse
+    {
+        Gate::authorize('manageMember', $organizer);
+        $addOrganizerMember->execute(
+            User::findOrFail($request->validated('user_id')),
+            $organizer
+        );
+        return response()->json(['message' => 'Member added successfully.'], 201);
     }
 }

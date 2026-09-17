@@ -40,7 +40,10 @@ class User extends Authenticatable
     // Ta relacja jest używana przez policy do sprawdzania członkostwa użytkownika.
     public function organizers(): BelongsToMany
     {
-        return $this->belongsToMany(Organizer::class)->withTimestamps();
+        return $this
+        ->belongsToMany(Organizer::class)
+        ->withPivot('role')
+        ->withTimestamps();
     }
 
     public function eventApplications(): HasMany

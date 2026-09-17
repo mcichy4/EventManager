@@ -30,6 +30,7 @@ Route::post(
 )->middleware('auth:sanctum');
 
 Route::post('/organizers', [OrganizerController::class, 'store'])->middleware('auth:sanctum');
+Route::post('/organizers/{organizer}/members', [OrganizerController::class, 'addMember'])->middleware('auth:sanctum');
 
 Route::get('/events', [EventController::class, 'index']);
 Route::delete('/events/{event}', [EventController::class, 'destroy'])->middleware('auth:sanctum');

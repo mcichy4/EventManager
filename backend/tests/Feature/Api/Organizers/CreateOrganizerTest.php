@@ -10,6 +10,7 @@ use App\Models\Organizer;
 use App\Models\User;
 
 use App\Enums\OrganizerType;
+use App\Enums\OrganizerMemberRole;
 
 class CreateOrganizerTest extends TestCase
 {
@@ -38,7 +39,13 @@ class CreateOrganizerTest extends TestCase
         $this->assertDatabaseHas('organizer_user',  [
             'user_id' => $user->id,
             'organizer_id' => Organizer::first()->id,
+            'role' => OrganizerMemberRole::OWNER->value,
         ]);
+
+        $organizer = Organizer::firstOrFail();
+        $member = $organizer->users()->firstOrFail();
+        $this->assertSame(OrganizerMemberRole::OWNER->value,
+            $member->pivot->role);
     }
 
     public function test_guest_cannot_create_organizer(): void
@@ -91,6 +98,17 @@ class CreateOrganizerTest extends TestCase
             'type' => OrganizerType::COMPANY->value,
             'description' => null,
         ]);
+
+        $this->assertDatabaseHas('organizer_user', [
+            'user_id' => $user->id,
+            'organizer_id' => Organizer::first()->id,
+            'role' => OrganizerMemberRole::OWNER->value,
+        ]);
+
+        $organizer = Organizer::firstOrFail();
+        $member = $organizer->users()->firstOrFail();
+        $this->assertSame(OrganizerMemberRole::OWNER->value,
+            $member->pivot->role);
     }
 
 }

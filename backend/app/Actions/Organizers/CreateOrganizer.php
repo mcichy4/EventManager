@@ -4,6 +4,7 @@ namespace App\Actions\Organizers;
 
 use App\Models\Organizer;
 use App\Models\User;
+use App\Enums\OrganizerMemberRole;
 use Illuminate\Support\Facades\DB;
 
 
@@ -17,7 +18,9 @@ class CreateOrganizer
                 'type' => $type,
                 'description' => $description,
             ]);
-            $organizer->users()->attach($user);
+            $organizer->users()->attach($user, [
+                'role' => OrganizerMemberRole::OWNER->value,
+            ]);
             return $organizer;
         });
     }

@@ -2,9 +2,9 @@
 
 namespace App\Policies;
 
-use App\Models\User;
-use App\Models\Organizer;
 use App\Enums\OrganizerMemberRole;
+use App\Models\Organizer;
+use App\Models\User;
 
 class OrganizerPolicy
 {

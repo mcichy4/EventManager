@@ -41,9 +41,9 @@ class User extends Authenticatable
     public function organizers(): BelongsToMany
     {
         return $this
-        ->belongsToMany(Organizer::class)
-        ->withPivot('role')
-        ->withTimestamps();
+            ->belongsToMany(Organizer::class)
+            ->withPivot('role')
+            ->withTimestamps();
     }
 
     public function eventApplications(): HasMany

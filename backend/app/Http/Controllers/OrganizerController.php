@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Organizer;
-use Illuminate\Http\Request;
-
-use App\Http\Requests\CreateOrganizerRequest;
-use App\Actions\Organizers\CreateOrganizer;
 use App\Actions\Organizers\AddOrganizerMember;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Http\JsonResponse;
-use App\Models\User;
+use App\Actions\Organizers\CreateOrganizer;
 use App\Http\Requests\AddOrganizerMemberRequest;
+use App\Http\Requests\CreateOrganizerRequest;
+use App\Models\Organizer;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class OrganizerController extends Controller
 {
@@ -85,6 +84,26 @@ class OrganizerController extends Controller
             User::findOrFail($request->validated('user_id')),
             $organizer
         );
+
         return response()->json(['message' => 'Member added successfully.'], 201);
+    }
+
+    public function listMembers(Organizer $organizer): JsonResponse
+    {
+        Gate::authorize('manageMember', $organizer);
+        $members = $organizer
+            ->users()
+            ->withPivot('role')
+            ->get()
+            ->map(function ($member) {
+                return [
+                    'id' => $member->id,
+                    'name' => $member->name,
+                    'email' => $member->email,
+                    'role' => $member->pivot->role,
+                ];
+            });
+
+        return response()->json($members);
     }
 }

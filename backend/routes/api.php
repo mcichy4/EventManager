@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\OrganizerController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\OrganizerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +31,7 @@ Route::post(
 
 Route::post('/organizers', [OrganizerController::class, 'store'])->middleware('auth:sanctum');
 Route::post('/organizers/{organizer}/members', [OrganizerController::class, 'addMember'])->middleware('auth:sanctum');
+Route::get('/organizers/{organizer}/members', [OrganizerController::class, 'listMembers'])->middleware('auth:sanctum');
 
 Route::get('/events', [EventController::class, 'index']);
 Route::delete('/events/{event}', [EventController::class, 'destroy'])->middleware('auth:sanctum');

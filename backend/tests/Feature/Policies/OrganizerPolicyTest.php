@@ -2,25 +2,21 @@
 
 namespace Tests\Feature\Policies;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
-
-use App\Models\User;
-use App\Models\Organizer;
 use App\Actions\Organizers\CreateOrganizer;
-use App\Enums\OrganizerType;
 use App\Enums\OrganizerMemberRole;
+use App\Enums\OrganizerType;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class OrganizerPolicyTest extends TestCase
 {
-
     use RefreshDatabase;
 
     public function test_owner_can_manage_member(): void
     {
         $owner = User::factory()->create();
-        $organizer = (new CreateOrganizer())->execute(
+        $organizer = (new CreateOrganizer)->execute(
             $owner,
             'Test Organizer',
             OrganizerType::COMPANY->value,
@@ -41,7 +37,7 @@ class OrganizerPolicyTest extends TestCase
     public function test_member_cannot_manage_member(): void
     {
         $owner = User::factory()->create();
-        $organizer = (new CreateOrganizer())->execute(
+        $organizer = (new CreateOrganizer)->execute(
             $owner,
             'Test Organizer',
             OrganizerType::COMPANY->value,

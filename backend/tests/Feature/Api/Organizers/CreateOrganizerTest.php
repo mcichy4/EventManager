@@ -2,15 +2,12 @@
 
 namespace Tests\Feature\Api\Organizers;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
-
+use App\Enums\OrganizerMemberRole;
+use App\Enums\OrganizerType;
 use App\Models\Organizer;
 use App\Models\User;
-
-use App\Enums\OrganizerType;
-use App\Enums\OrganizerMemberRole;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class CreateOrganizerTest extends TestCase
 {
@@ -36,7 +33,7 @@ class CreateOrganizerTest extends TestCase
             'description' => 'Test Description',
         ]);
 
-        $this->assertDatabaseHas('organizer_user',  [
+        $this->assertDatabaseHas('organizer_user', [
             'user_id' => $user->id,
             'organizer_id' => Organizer::first()->id,
             'role' => OrganizerMemberRole::OWNER->value,
@@ -50,7 +47,7 @@ class CreateOrganizerTest extends TestCase
 
     public function test_guest_cannot_create_organizer(): void
     {
-        $response =$this->postJson('/api/organizers', [
+        $response = $this->postJson('/api/organizers', [
             'name' => 'Test Organizer',
             'type' => OrganizerType::COMPANY->value,
             'description' => 'Test Description',
@@ -73,7 +70,7 @@ class CreateOrganizerTest extends TestCase
         $response = $this->postJson('/api/organizers', [
             'name' => '',
             'type' => 'association',
-            'description' => array('Test description'),
+            'description' => ['Test description'],
         ]);
 
         $response
@@ -110,5 +107,4 @@ class CreateOrganizerTest extends TestCase
         $this->assertSame(OrganizerMemberRole::OWNER->value,
             $member->pivot->role);
     }
-
 }

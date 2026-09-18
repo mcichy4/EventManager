@@ -25,9 +25,9 @@ class Organizer extends Model
     public function users(): BelongsToMany
     {
         return $this
-        ->belongsToMany(User::class)
-        ->withPivot('role')
-        ->withTimestamps();
+            ->belongsToMany(User::class)
+            ->withPivot('role')
+            ->withTimestamps();
     }
 
     public function events(): HasMany

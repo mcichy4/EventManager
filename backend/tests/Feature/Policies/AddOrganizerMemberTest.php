@@ -2,15 +2,12 @@
 
 namespace Tests\Feature\Policies;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
-
-use App\Models\User;
-use App\Models\Organizer;
 use App\Actions\Organizers\CreateOrganizer;
-use App\Enums\OrganizerType;
 use App\Enums\OrganizerMemberRole;
+use App\Enums\OrganizerType;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class AddOrganizerMemberTest extends TestCase
 {
@@ -89,7 +86,7 @@ class AddOrganizerMemberTest extends TestCase
         $this->postJson("/api/organizers/{$organizer->id}/members", [
             'user_id' => $member->id,
         ])
-        ->assertUnauthorized();
+            ->assertUnauthorized();
 
         $this->assertDatabaseMissing('organizer_user', [
             'organizer_id' => $organizer->id,

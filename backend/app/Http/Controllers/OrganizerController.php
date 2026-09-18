@@ -106,4 +106,11 @@ class OrganizerController extends Controller
 
         return response()->json($members);
     }
+
+    public function removeMember(Organizer $organizer, User $member): JsonResponse
+    {
+        Gate::authorize('manageMember', $organizer);
+        app(\App\Actions\Organizers\DeleteOrganizerMember::class)->execute($organizer, $member);
+        return response()->json(['message' => 'Member removed successfully.'], 204);
+       }
 }

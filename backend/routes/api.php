@@ -31,6 +31,7 @@ Route::post(
 )->middleware('auth:sanctum');
 
 Route::post('/register', [RegisteredUserController::class, 'register']);
+Route::post('/login', [RegisteredUserController::class, 'login']);
 
 Route::post('/organizers', [OrganizerController::class, 'store'])->middleware('auth:sanctum');
 Route::post('/organizers/{organizer}/members', [OrganizerController::class, 'addMember'])->middleware('auth:sanctum');

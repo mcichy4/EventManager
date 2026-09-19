@@ -2,16 +2,13 @@
 
 namespace Tests\Feature\Api\Organizers;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
-
-use App\Models\User;
-use App\Models\Organizer;
-use App\Actions\Organizers\CreateOrganizer;
 use App\Actions\Organizers\AddOrganizerMember;
+use App\Actions\Organizers\CreateOrganizer;
 use App\Enums\OrganizerType;
-use App\Enums\OrganizerMemberRole;
+use App\Models\Organizer;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class DeleteOrganizerMembersTest extends TestCase
 {
@@ -78,7 +75,7 @@ class DeleteOrganizerMembersTest extends TestCase
             ->actingAs($member2)
             ->deleteJson("/api/organizers/{$organizer->id}/members/{$member1->id}")
             ->assertForbidden();
-        
+
         $this->assertDatabaseHas('organizer_user', [
             'organizer_id' => $organizer->id,
             'user_id' => $member1->id,
@@ -98,7 +95,7 @@ class DeleteOrganizerMembersTest extends TestCase
 
         $this->assertDatabaseHas('organizer_user', [
             'organizer_id' => $organizer->id,
-            'user_id' => $member->id
+            'user_id' => $member->id,
         ]);
     }
 
@@ -138,7 +135,7 @@ class DeleteOrganizerMembersTest extends TestCase
 
         $this->assertDatabaseHas('organizer_user', [
             'organizer_id' => $organizer->id,
-            'user_id' => $owner->id
+            'user_id' => $owner->id,
         ]);
     }
 }

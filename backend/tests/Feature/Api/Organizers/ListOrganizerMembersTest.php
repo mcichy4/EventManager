@@ -111,7 +111,7 @@ class ListOrganizerMembersTest extends TestCase
 
         $this
             ->actingAs($user)
-            ->getJson("/api/organizers/99999/members")
+            ->getJson('/api/organizers/99999/members')
             ->assertNotFound();
     }
 }

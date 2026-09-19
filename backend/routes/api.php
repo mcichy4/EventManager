@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\OrganizerController;
+use App\Http\Controllers\RegisteredUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,8 @@ Route::post(
     [EventController::class, 'publish']
 )->middleware('auth:sanctum');
 
+Route::post('/register', [RegisteredUserController::class, 'register']);
+
 Route::post('/organizers', [OrganizerController::class, 'store'])->middleware('auth:sanctum');
 Route::post('/organizers/{organizer}/members', [OrganizerController::class, 'addMember'])->middleware('auth:sanctum');
 Route::get('/organizers/{organizer}/members', [OrganizerController::class, 'listMembers'])->middleware('auth:sanctum');
@@ -36,6 +39,7 @@ Route::delete('/organizers/{organizer}/members/{member}', [OrganizerController::
     'removeMember'])->middleware('auth:sanctum');
 Route::get('/organizers/{organizer}/events', [OrganizerController::class, 'listOrganizerEvents'])->middleware('auth:sanctum');
 Route::get('/organizers/my', [OrganizerController::class, 'listMyOrganizers'])->middleware('auth:sanctum');
+
 Route::get('/events', [EventController::class, 'index']);
 Route::delete('/events/{event}', [EventController::class, 'destroy'])->middleware('auth:sanctum');
 Route::get('/events/{event}', [EventController::class, 'show']);

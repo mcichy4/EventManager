@@ -35,7 +35,7 @@ Route::get('/organizers/{organizer}/members', [OrganizerController::class, 'list
 Route::delete('/organizers/{organizer}/members/{member}', [OrganizerController::class,
     'removeMember'])->middleware('auth:sanctum');
 Route::get('/organizers/{organizer}/events', [OrganizerController::class, 'listOrganizerEvents'])->middleware('auth:sanctum');
-
+Route::get('/organizers/my', [OrganizerController::class, 'listMyOrganizers'])->middleware('auth:sanctum');
 Route::get('/events', [EventController::class, 'index']);
 Route::delete('/events/{event}', [EventController::class, 'destroy'])->middleware('auth:sanctum');
 Route::get('/events/{event}', [EventController::class, 'show']);

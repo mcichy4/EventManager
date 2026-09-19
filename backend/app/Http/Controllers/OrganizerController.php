@@ -138,4 +138,25 @@ class OrganizerController extends Controller
 
         return response()->json($events);
     }
+
+    public function listMyOrganizers(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $organizers = $user->organizers()
+            ->withCount('users')
+            ->orderByDesc('created_at')
+            ->paginate(10)
+            ->through(function (Organizer $organizer) {
+                return [
+                    'id' => $organizer->id,
+                    'name' => $organizer->name,
+                    'type' => $organizer->type,
+                    'description' => $organizer->description,
+                    'members_count' => $organizer->users_count,
+                    'role' => $organizer->pivot->role,
+                ];
+            });
+
+        return response()->json($organizers);
+    }
 }

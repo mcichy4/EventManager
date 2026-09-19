@@ -41,6 +41,7 @@ Route::delete('/events/{event}', [EventController::class, 'destroy'])->middlewar
 Route::get('/events/{event}', [EventController::class, 'show']);
 Route::post('/events/{event}/cancel', [EventController::class, 'cancelEvent'])->middleware('auth:sanctum');
 Route::post('/events/{event}/applications', [EventController::class, 'apply'])->middleware('auth:sanctum');
+Route::get('/events/{event}/applications', [EventController::class, 'listApplications'])->middleware('auth:sanctum');
 Route::delete('/event-applications/{eventApplication}', [EventController::class, 'cancelApplication'])->middleware('auth:sanctum');
 Route::post('/event-applications/{eventApplication}/accept', [EventController::class, 'acceptApplication'])->middleware('auth:sanctum');
 Route::post('/event-applications/{eventApplication}/reject', [EventController::class, 'rejectApplication'])->middleware('auth:sanctum');

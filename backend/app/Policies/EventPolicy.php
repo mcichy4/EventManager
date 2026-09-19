@@ -90,4 +90,11 @@ class EventPolicy
             ->whereKey($event->organizer_id)
             ->exists();
     }
+
+    public function listApplications(User $user, Event $event): bool
+    {
+        return $user->organizers()
+            ->whereKey($event->organizer_id)
+            ->exists();
+    }
 }

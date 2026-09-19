@@ -178,4 +178,24 @@ class EventController extends Controller
 
         return response()->json(null, 204);
     }
+
+    public function listApplications(Event $event): JsonResponse
+    {
+        Gate::authorize('listApplications', $event);
+
+        $applications = $event->applications()
+            ->with('user')
+            ->orderByDesc('created_at')
+            ->paginate(10)
+            ->through(function (EventApplication $application) {
+                return [
+                    'id' => $application->id,
+                    'user_id' => $application->user_id,
+                    'name' => $application->user->name,
+                    'status' => $application->status,
+                ];
+            });
+
+        return response()->json($applications);
+    }
 }

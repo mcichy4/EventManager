@@ -5,17 +5,17 @@ namespace Tests\Feature\Api\Organizers;
 use App\Actions\Events\CancelEvent;
 use App\Actions\Events\CreateEvent;
 use App\Actions\Events\PublishEvent;
-use App\Actions\Organizers\CreateOrganizer;
 use App\Actions\Organizers\AddOrganizerMember;
+use App\Actions\Organizers\CreateOrganizer;
 use App\Data\Events\CreateEventData;
 use App\Enums\EventStatus;
 use App\Enums\OrganizerType;
 use App\Models\Event;
 use App\Models\Organizer;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use Carbon\CarbonImmutable;
 
 class ListOrganizerEventsTest extends TestCase
 {
@@ -164,7 +164,7 @@ class ListOrganizerEventsTest extends TestCase
         $owner = User::factory()->create();
         $organizer = $this->createOrganizer($owner);
 
-        for($i = 1; $i <= 11; $i++) {
+        for ($i = 1; $i <= 11; $i++) {
             $this->createEvent($organizer, 'event '.$i);
         }
 

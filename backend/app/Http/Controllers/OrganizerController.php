@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Actions\Organizers\AddOrganizerMember;
 use App\Actions\Organizers\CreateOrganizer;
+use App\Actions\Organizers\DeleteOrganizerMember;
 use App\Http\Requests\AddOrganizerMemberRequest;
 use App\Http\Requests\CreateOrganizerRequest;
+use App\Models\Event;
 use App\Models\Organizer;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -110,7 +112,30 @@ class OrganizerController extends Controller
     public function removeMember(Organizer $organizer, User $member): JsonResponse
     {
         Gate::authorize('manageMember', $organizer);
-        app(\App\Actions\Organizers\DeleteOrganizerMember::class)->execute($organizer, $member);
+        app(DeleteOrganizerMember::class)->execute($organizer, $member);
+
         return response()->json(['message' => 'Member removed successfully.'], 204);
-       }
+    }
+
+    public function listOrganizerEvents(Organizer $organizer): JsonResponse
+    {
+        Gate::authorize('viewEvents', $organizer);
+
+        $events = $organizer->events()
+            ->withCount('applications')
+            ->orderByDesc('starts_at')
+            ->paginate(10)
+            ->through(function (Event $event) {
+                return [
+                    'id' => $event->id,
+                    'title' => $event->title,
+                    'status' => $event->status,
+                    'starts_at' => $event->starts_at,
+                    'ends_at' => $event->ends_at,
+                    'applications_count' => $event->applications_count,
+                ];
+            });
+
+        return response()->json($events);
+    }
 }

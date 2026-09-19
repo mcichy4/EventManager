@@ -24,4 +24,12 @@ class OrganizerPolicy
             ->wherePivot('role', OrganizerMemberRole::OWNER->value)
             ->exists();
     }
+
+    public function viewEvents(User $user, Organizer $organizer): bool
+    {
+        return $organizer
+            ->users()
+            ->whereKey($user->id)
+            ->exists();
+    }
 }

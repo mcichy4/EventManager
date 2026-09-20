@@ -9,7 +9,7 @@ services:
         GROUP_ID: ${GROUP_ID}
     working_dir: /var/www/backend
     volumes:
-      - ./backend:/var/www/backend
+      - ./:/var/www/
     depends_on:
       - postgres
 

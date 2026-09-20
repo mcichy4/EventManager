@@ -35,10 +35,12 @@ class UserLoginTest extends TestCase
                     'name',
                     'email',
                 ],
+                'token',
             ])
             ->assertJsonMissingPath('user.password');
 
-        $this->assertAuthenticatedAs($user);
+        $this->assertDatabaseCount('personal_access_tokens', 1);
+        $this->assertGuest();
     }
 
     public function test_user_login_invalid_password(): void
@@ -56,6 +58,20 @@ class UserLoginTest extends TestCase
             ]);
 
         $this->assertGuest();
+    }
+
+    public function test_login_token_can_access_protected_endpoint(): void
+    {
+        $user = $this->createUser();
+
+        $token = $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ])->json('token');
+
+        $this->withToken($token)
+            ->getJson('/api/organizers/my')
+            ->assertOk();
     }
 
     public function test_user_login_with_nonexistent_email(): void

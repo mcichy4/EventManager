@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class RegisteredUserController extends Controller
 {
@@ -19,12 +19,12 @@ class RegisteredUserController extends Controller
         $user = User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
-            'password' => bcrypt($validatedData['password']),
+            'password' => $validatedData['password'],
         ]);
 
-        Auth::login($user);
+        $token = $user->createToken('auth-token')->plainTextToken;
 
-        return response()->json(['user' => $user], 201);
+        return response()->json(['user' => $user, 'token' => $token], 201);
     }
 
     public function login(Request $request)
@@ -34,12 +34,21 @@ class RegisteredUserController extends Controller
             'password' => 'required|string',
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
+        $user = User::query()->where('email', $credentials['email'])->first();
 
-            return response()->json(['user' => $user], 200);
+        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-        return response()->json(['message' => 'Invalid credentials'], 401);
+        $token = $user->createToken('auth-token')->plainTextToken;
+
+        return response()->json(['user' => $user, 'token' => $token]);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()?->delete();
+
+        return response()->noContent();
     }
 }

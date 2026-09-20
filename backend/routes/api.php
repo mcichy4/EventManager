@@ -51,3 +51,4 @@ Route::delete('/event-applications/{eventApplication}', [EventController::class,
 Route::post('/event-applications/{eventApplication}/accept', [EventController::class, 'acceptApplication'])->middleware('auth:sanctum');
 Route::post('/event-applications/{eventApplication}/reject', [EventController::class, 'rejectApplication'])->middleware('auth:sanctum');
 Route::get('/me/event-applications', [EventController::class, 'myApplications'])->middleware('auth:sanctum');
+Route::post('/logout', [RegisteredUserController::class, 'logout'])->middleware('auth:sanctum');

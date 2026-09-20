@@ -35,6 +35,7 @@ class UserRegisterTest extends TestCase
                     'created_at',
                     'updated_at',
                 ],
+                'token',
             ]);
 
         $this->assertDatabaseHas('users', [
@@ -42,7 +43,8 @@ class UserRegisterTest extends TestCase
             'email' => 'jan.kowalski@example.com',
         ]);
 
-        $this->assertAuthenticated();
+        $this->assertDatabaseCount('personal_access_tokens', 1);
+        $this->assertGuest();
     }
 
     public function test_user_cannot_register_with_existing_email(): void

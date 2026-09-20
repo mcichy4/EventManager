@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getCurrentUser, logout } from "./api/auth";
+import { clearToken, getCurrentUser, hasToken, logout } from "./api/auth";
 import LoginForm from "./components/LoginForm";
 import "./App.css";
 
@@ -10,11 +10,18 @@ function App() {
 
   useEffect(() => {
     const restoreSession = async () => {
+      if (!hasToken()) {
+        setIsLoadingUser(false);
+        return;
+      }
+
       try {
         const currentUser = await getCurrentUser();
         setUser(currentUser);
       } catch (error) {
-        if (error.response?.status !== 401) {
+        if (error.response?.status === 401) {
+          clearToken();
+        } else {
           console.error("Nie udało się przywrócić sesję:", error);
         }
       } finally {
@@ -33,6 +40,7 @@ function App() {
       console.error("Nie udało się wylogować:", error);
     } finally {
       setIsLoggingOut(false);
+      setUser(null);
     }
   };
 

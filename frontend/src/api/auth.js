@@ -1,20 +1,28 @@
 import http from "./http";
+import { clearToken, hasToken, setToken } from "./token";
 
 export const login = async ({ email, password }) => {
-  await http.get("/sanctum/csrf-cookie");
-
-  await http.post("/login", {
+  const response = await http.post("/login", {
     email,
     password,
   });
-  return getCurrentUser();
+
+  setToken(response.data.token);
+
+  return response.data.user;
 };
 
 export const getCurrentUser = async () => {
-  const response = await http.get("/api/user");
+  const response = await http.get("/user");
   return response.data;
 };
 
 export const logout = async () => {
-  await http.post("/logout");
+  try {
+    await http.post("/logout");
+  } finally {
+    clearToken();
+  }
 };
+
+export { clearToken, hasToken };

@@ -38,10 +38,12 @@ final class CreateEvent
             'organizer_id' => $organizer->id,
             'title' => $data->title,
             'description' => $data->description,
+            'category' => $data->category,
             'starts_at' => $data->startsAt,
             'ends_at' => $data->endsAt,
             'application_deadline' => $data->applicationDeadline,
             'location' => $data->location,
+            'address' => $data->address,
             'participant_limit' => $data->participantLimit,
             'status' => EventStatus::DRAFT,
         ]);

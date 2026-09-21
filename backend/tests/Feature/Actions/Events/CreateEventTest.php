@@ -4,6 +4,7 @@ namespace Tests\Feature\Actions\Events;
 
 use App\Actions\Events\CreateEvent;
 use App\Data\Events\CreateEventData;
+use App\Enums\EventCategory;
 use App\Enums\EventStatus;
 use App\Enums\OrganizerType;
 use App\Models\Organizer;
@@ -36,7 +37,9 @@ class CreateEventTest extends TestCase
             endsAt: now()->addDays(11)->toImmutable(),
             applicationDeadline: now()->addDays(5)->toImmutable(),
             participantLimit: 100,
-            location: 'Test Location'
+            location: 'Test Location',
+            category: EventCategory::WORKSHOPS->value,
+            address: 'ul. Mińska 25, Warszawa',
         );
     }
 
@@ -54,7 +57,9 @@ class CreateEventTest extends TestCase
             endsAt: now()->addDays(11)->toImmutable(),
             applicationDeadline: now()->addDays(5)->toImmutable(),
             participantLimit: 100,
-            location: 'Test Location'
+            location: 'Test Location',
+            category: EventCategory::WORKSHOPS->value,
+            address: 'ul. Mińska 25, Warszawa',
         );
 
         $event = app(CreateEvent::class)->execute(
@@ -64,7 +69,9 @@ class CreateEventTest extends TestCase
 
         $this->assertSame('Test Event', $event->title);
         $this->assertSame('This is a test event.', $event->description);
-        $this->assertsame('Test Location', $event->location);
+        $this->assertSame('Test Location', $event->location);
+        $this->assertSame(EventCategory::WORKSHOPS, $event->category);
+        $this->assertSame('ul. Mińska 25, Warszawa', $event->address);
         $this->assertSame(100, $event->participant_limit);
 
         $this->assertSame(EventStatus::DRAFT, $event->status);
@@ -74,6 +81,8 @@ class CreateEventTest extends TestCase
             'id' => $event->id,
             'organizer_id' => $organizer->id,
             'title' => 'Test Event',
+            'category' => EventCategory::WORKSHOPS->value,
+            'address' => 'ul. Mińska 25, Warszawa',
             'participant_limit' => 100,
         ]);
     }

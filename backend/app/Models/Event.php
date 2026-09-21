@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EventCategory;
 use App\Enums\EventStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,6 +18,7 @@ class Event extends Model
     {
         return [
             'status' => EventStatus::class,
+            'category' => EventCategory::class,
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',
             'application_deadline' => 'datetime',

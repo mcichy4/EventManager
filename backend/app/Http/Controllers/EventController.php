@@ -12,6 +12,7 @@ use App\Actions\Events\PublishEvent;
 use App\Actions\Events\RejectEventApplication;
 use App\Actions\Events\UpdateEvent;
 use App\Data\Events\CreateEventData;
+use App\Enums\EventApplicationStatus;
 use App\Enums\EventStatus;
 use App\Http\Requests\CreateEventRequest;
 use App\Http\Requests\UpdateEventRequest;
@@ -35,12 +36,14 @@ class EventController extends Controller
         $data = new CreateEventData(
             title: $request->validated('title'),
             description: $request->validated('description'),
+            category: $request->validated('category'),
             startsAt: CarbonImmutable::parse($request->validated('starts_at')),
             endsAt: CarbonImmutable::parse($request->validated('ends_at')),
             applicationDeadline: $request->validated('application_deadline')
-                ? CarbonImmutable::parse($request->validated('application_deadline'))
-                : null,
+            ? CarbonImmutable::parse($request->validated('application_deadline'))
+            : null,
             location: $request->validated('location'),
+            address: $request->validated('address'),
             participantLimit: $request->validated('participant_limit'),
         );
 
@@ -76,6 +79,10 @@ class EventController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = Event::query()
+            ->with('organizer:id,name')
+            ->withCount([
+                'applications as accepted_applications_count' => fn ($applications) => $applications->where('status', EventApplicationStatus::ACCEPTED->value),
+            ])
             ->where('status', EventStatus::PUBLISHED->value);
 
         $search = $request->query('search');
@@ -100,6 +107,12 @@ class EventController extends Controller
         if ($event->status !== EventStatus::PUBLISHED) {
             abort(404, 'Event not found');
         }
+
+        $event
+            ->load('organizer:id,name')
+            ->loadCount([
+                'applications as accepted_applications_count' => fn ($applications) => $applications->where('status', EventApplicationStatus::ACCEPTED->value),
+            ]);
 
         return response()->json($event);
     }

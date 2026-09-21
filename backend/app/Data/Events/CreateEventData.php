@@ -2,6 +2,7 @@
 
 namespace App\Data\Events;
 
+use App\Enums\EventCategory;
 use Carbon\CarbonImmutable;
 
 /**
@@ -17,6 +18,8 @@ final class CreateEventData
         public CarbonImmutable $endsAt,
         public ?CarbonImmutable $applicationDeadline,
         public string $location,
-        public ?int $participantLimit
+        public ?int $participantLimit,
+        public string $category = EventCategory::OTHER->value,
+        public ?string $address = null,
     ) {}
 }

@@ -3,10 +3,13 @@
 namespace Tests\Feature\Api\Events;
 
 use App\Data\Events\CreateEventData;
+use App\Enums\EventApplicationStatus;
 use App\Enums\EventStatus;
 use App\Enums\OrganizerType;
 use App\Models\Event;
+use App\Models\EventApplication;
 use App\Models\Organizer;
+use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -53,6 +56,21 @@ class ListEventsTest extends TestCase
     public function test_guest_can_list_published_events(): void
     {
         $event = $this->createEvent(EventStatus::PUBLISHED);
+        $acceptedApplicant = User::factory()->create();
+        $pendingApplicant = User::factory()->create();
+
+        EventApplication::forceCreate([
+            'event_id' => $event->id,
+            'user_id' => $acceptedApplicant->id,
+            'status' => EventApplicationStatus::ACCEPTED,
+        ]);
+
+        EventApplication::forceCreate([
+            'event_id' => $event->id,
+            'user_id' => $pendingApplicant->id,
+            'status' => EventApplicationStatus::PENDING,
+        ]);
+
         $response = $this->getJson('/api/events');
 
         $response->assertOk();
@@ -60,6 +78,9 @@ class ListEventsTest extends TestCase
             'id' => $event->id,
             'title' => $event->title,
         ]);
+        $response->assertJsonPath('data.0.organizer.id', $event->organizer_id);
+        $response->assertJsonPath('data.0.organizer.name', 'Organizer Name');
+        $response->assertJsonPath('data.0.accepted_applications_count', 1);
     }
 
     public function test_guest_cannot_list_draft_or_canceled_events(): void

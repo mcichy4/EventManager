@@ -1,7 +1,11 @@
+import { useNavigate } from "react-router-dom";
+import LoginForm from "../components/LoginForm";
+
 export default function LoginPage() {
-    return (
-        <>
-            <h1>Logowanie</h1>
-        </>
-    )
+  const navigate = useNavigate();
+  const handleLogin = () => {
+    navigate("/");
+  };
+
+  return <LoginForm onLogin={handleLogin} />;
 }

@@ -1,33 +1,37 @@
+import {useEffect, useState} from "react";
 import EventCard from "../components/events/EventCard";
-
-const events = [
-        {
-      id: 1,
-      title: "Warsztaty: pierwsze kroki z ceramiką",
-      category: "Warsztaty",
-      location: "Pracownia Forma, Warszawa",
-      startsAt: "2026-10-11T10:00:00",
-      color: "terracotta",
-    },
-    {
-      id: 2,
-      title: "Nocny bieg po nadwiślańskich bulwarach",
-      category: "Sport",
-      location: "Bulwary Wiślane, Warszawa",
-      startsAt: "2026-10-18T19:00:00",
-      color: "violet",
-    },
-    {
-      id: 3,
-      title: "Spotkanie dla ludzi z pomysłami",
-      category: "Networking",
-      location: "Centrum Kreatywne Targowa, Warszawa",
-      startsAt: "2026-10-24T18:30:00",
-      color: "yellow",
-    },
-];
+import {getEvents} from "../api/events";
 
 export default function HomePage() {
+    const [events, setEvents] = useState([]);
+    const [search, setSearch] = useState("");
+    const [submittedSearch, setSubmittedSearch] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const loadEvents = async () => {
+            setIsLoading(true);
+            setError(null);
+
+            try {
+                const response = await getEvents(submittedSearch);
+                setEvents(response.data);
+            } catch {
+                setError("Nie udało się pobrać wydarzeń. Spróbuj ponownie za chwilę.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadEvents();
+    }, [submittedSearch]);
+
+    const handleSearch = (event) => {
+        event.preventDefault();
+        setSubmittedSearch(search.trim());
+    };
+
     return (
         <>
             <section className="hero-section">
@@ -37,13 +41,15 @@ export default function HomePage() {
                     Odkrywaj warsztaty, koncerty i inne wydarzenia w Twojej okolicy. Zarezerwuj miejsce i dołącz do społeczności pasjonatów.
                 </p>
 
-                <form className="event-search">
+                <form className="event-search" onSubmit={handleSearch}>
                     <label htmlFor="event-search" className="sr-only">Szukaj wydarzenia</label>
                     <input
                         id="event-search"
                         type="search"
                         placeholder="Szukaj wydarzenia"
                         aria-label="Szukaj wydarzenia"
+                        value={search}
+                        onChange={(event) => setSearch(event.target.value)}
                         />
                         <button className="button button-primary" type="submit">Szukaj</button>
                 </form>
@@ -59,7 +65,12 @@ export default function HomePage() {
                 </div>
 
                 <div className="event-grid">
-                    {events.map((event) => (
+                    {isLoading && <p>Ładowanie wydarzeń...</p>}
+                    {error && <p role="alert">{error}</p>}
+                    {!isLoading && !error && events.length === 0 && (
+                        <p>Nie znaleźliśmy wydarzeń spełniających te kryteria.</p>
+                    )}
+                    {!isLoading && !error && events.map((event) => (
                         <EventCard key={event.id} event={event} />
                     ))}
                 </div>

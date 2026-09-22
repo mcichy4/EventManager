@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { getEvent } from "../api/events";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../auth/useAuth";
+import { applyToEvent, getEvent } from "../api/events";
 
 const categoryLabels = {
   workshops: "Warsztaty",
@@ -13,9 +14,13 @@ const categoryLabels = {
 
 export default function EventDetailPage() {
   const { eventId } = useParams();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [event, setEvent] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [applicationMessage, setApplicationMessage] = useState(null);
+  const [isApplying, setIsApplying] = useState(false);
 
   useEffect(() => {
     const loadEvent = async () => {
@@ -72,7 +77,49 @@ export default function EventDetailPage() {
   const availablePlaces =
     event.participant_limit === null
       ? null
-      : event.participant_limit - acceptedApplicationsCount;
+      : Math.max(0, event.participant_limit - acceptedApplicationsCount);
+  const hasReachedCapacity = availablePlaces === 0;
+  const hasApplied = applicationMessage?.type === "success";
+  const deadline = event.application_deadline
+    ? new Intl.DateTimeFormat("pl-PL", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }).format(new Date(event.application_deadline))
+    : null;
+
+  const handleApplication = async () => {
+    if (!isAuthenticated) {
+      navigate("/login", {
+        state: { from: { pathname: `/events/${eventId}` } },
+      });
+      return;
+    }
+
+    setIsApplying(true);
+    setApplicationMessage(null);
+
+    try {
+      await applyToEvent(eventId);
+      setApplicationMessage({
+        type: "success",
+        text: "Twoje zgłoszenie zostało wysłane.",
+      });
+    } catch (requestError) {
+      const message = requestError.response?.data?.message;
+      setApplicationMessage({
+        type: "error",
+        text:
+          message === "User has already applied to this event."
+            ? "Masz już zgłoszenie na to wydarzenie."
+            : message === "Application deadline has passed for this event."
+              ? "Termin zgłoszeń na to wydarzenie minął."
+              : "Nie udało się wysłać zgłoszenia. Spróbuj ponownie za chwilę.",
+      });
+    } finally {
+      setIsApplying(false);
+    }
+  };
 
   return (
     <>
@@ -132,6 +179,13 @@ export default function EventDetailPage() {
               <strong>{event.location}</strong>
               <small>{event.address}</small>
             </div>
+
+            {deadline && (
+              <div>
+                <span className="event-meta__label">Zgłoszenia do</span>
+                <strong>{deadline}</strong>
+              </div>
+            )}
           </div>
 
           <div className="registration-summary">
@@ -151,7 +205,7 @@ export default function EventDetailPage() {
               <div className="capacity-bar">
                 <span
                   style={{
-                    width: `${(acceptedApplicationsCount / event.participant_limit) * 100}%`,
+                    width: `${Math.min(100, (acceptedApplicationsCount / event.participant_limit) * 100)}%`,
                   }}
                 />
               </div>
@@ -161,13 +215,32 @@ export default function EventDetailPage() {
           <button
             className="button button-primary registration-button"
             type="button"
+            onClick={handleApplication}
+            disabled={isApplying || hasReachedCapacity || hasApplied}
           >
-            Zgłoś się na wydarzenie
+            {isApplying
+              ? "Wysyłanie zgłoszenia..."
+              : hasApplied
+                ? "Zgłoszenie wysłane"
+                : hasReachedCapacity
+                  ? "Brak wolnych miejsc"
+                  : "Zgłoś się na wydarzenie"}
           </button>
 
-          <p className="registration-note">
-            Aby się zgłosić, zaloguj się lub załóż konto.
-          </p>
+          {applicationMessage && (
+            <p
+              className={`form-message form-message--${applicationMessage.type}`}
+              role="status"
+            >
+              {applicationMessage.text}
+            </p>
+          )}
+
+          {!isAuthenticated && (
+            <p className="registration-note">
+              Aby się zgłosić, zaloguj się lub załóż konto.
+            </p>
+          )}
         </aside>
       </div>
     </>

@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { login } from "../api/auth";
+import { useAuth } from "../auth/useAuth";
 
 export default function LoginForm({ onLogin }) {
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -23,11 +24,12 @@ export default function LoginForm({ onLogin }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="auth-form" onSubmit={handleSubmit}>
       <h1>Logowanie</h1>
       <label>
         Email:
         <input
+          autoComplete="email"
           type="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
@@ -37,6 +39,7 @@ export default function LoginForm({ onLogin }) {
       <label>
         Hasło:
         <input
+          autoComplete="current-password"
           type="password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
@@ -44,7 +47,11 @@ export default function LoginForm({ onLogin }) {
         />
       </label>
       {error && <p role="alert">{error}</p>}
-      <button type="submit" disabled={isSubmitting}>
+      <button
+        className="button button-primary"
+        type="submit"
+        disabled={isSubmitting}
+      >
         {isSubmitting ? "Logowanie..." : "Zaloguj się"}
       </button>
     </form>

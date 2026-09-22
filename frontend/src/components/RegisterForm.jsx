@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { register } from "../api/auth";
+import { useAuth } from "../auth/useAuth";
 
 export default function RegisterForm({ onRegister }) {
+  const { register } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,11 +37,12 @@ export default function RegisterForm({ onRegister }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="auth-form" onSubmit={handleSubmit}>
       <h1>Rejestracja</h1>
       <label>
         Nazwa:
         <input
+          autoComplete="name"
           type="text"
           value={name}
           onChange={(event) => setName(event.target.value)}
@@ -51,6 +53,7 @@ export default function RegisterForm({ onRegister }) {
       <label>
         Email:
         <input
+          autoComplete="email"
           type="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
@@ -61,6 +64,7 @@ export default function RegisterForm({ onRegister }) {
       <label>
         Hasło:
         <input
+          autoComplete="new-password"
           type="password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
@@ -71,6 +75,7 @@ export default function RegisterForm({ onRegister }) {
       <label>
         Powtórz hasło:
         <input
+          autoComplete="new-password"
           type="password"
           value={confirmPassword}
           onChange={(event) => setConfirmPassword(event.target.value)}
@@ -80,7 +85,11 @@ export default function RegisterForm({ onRegister }) {
 
       {error && <p role="alert">{error}</p>}
 
-      <button type="submit" disabled={isSubmitting}>
+      <button
+        className="button button-primary"
+        type="submit"
+        disabled={isSubmitting}
+      >
         {isSubmitting ? "Rejestracja..." : "Zarejestruj się"}
       </button>
     </form>

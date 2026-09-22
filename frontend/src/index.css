@@ -82,6 +82,12 @@ a {
   gap: 20px;
 }
 
+.user-name {
+  color: #667085;
+  font-size: 14px;
+  font-weight: 600;
+}
+
 .button {
   display: inline-flex;
   align-items: center;
@@ -113,6 +119,13 @@ a {
 .button-primary:hover {
   background: #4338ca;
   box-shadow: 0 7px 18px rgb(79 70 229 / 28%);
+}
+
+.button:disabled,
+.text-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
 }
 
 .page-content {

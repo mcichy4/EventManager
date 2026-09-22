@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import EventCard from "../components/events/EventCard";
 import { getEvents } from "../api/events";
 
@@ -66,9 +67,9 @@ export default function HomePage() {
             <p className="eyebrow">Nadchodzące wydarzenia</p>
             <h2>Odkryj wydarzenia w swojej okolicy</h2>
           </div>
-          <button className="text-button" type="button">
+          <Link className="text-button" to="/events">
             Wszystkie wydarzenia -&gt;
-          </button>
+          </Link>
         </div>
 
         <div className="event-grid">

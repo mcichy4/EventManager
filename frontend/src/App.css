@@ -886,6 +886,64 @@
   box-shadow: none;
 }
 
+.event-applications-page {
+  max-width: 850px;
+}
+
+.event-applications-page h1 {
+  margin: 0 0 30px;
+  color: #18223a;
+  font-size: 34px;
+  letter-spacing: -0.04em;
+}
+
+.applications-management-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.application-management-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 22px;
+  border: 1px solid #e5e7ef;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.application-management-card h2 {
+  margin: 0 0 7px;
+  color: #18223a;
+  font-size: 19px;
+}
+
+.application-management-card p {
+  margin: 0;
+  color: #667085;
+  font-size: 14px;
+}
+
+.application-management-card__actions {
+  display: grid;
+  justify-items: end;
+  gap: 12px;
+}
+
+.application-decision-buttons {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.application-decision-buttons .button {
+  min-height: 36px;
+  padding-inline: 14px;
+  box-shadow: none;
+}
+
 @media (max-width: 540px) {
   .organizer-event-card {
     align-items: start;
@@ -895,93 +953,102 @@
   .organizer-event-card__meta {
     justify-items: start;
   }
+
+  .application-management-card {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .application-management-card__actions {
+    justify-items: start;
+  }
 }
 
- .create-event-page {
-    max-width: 760px;
-  }
+.create-event-page {
+  max-width: 760px;
+}
 
+.event-form {
+  display: grid;
+  gap: 20px;
+  padding: 32px;
+  border: 1px solid #e5e7ef;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 16px 36px rgb(27 37 61 / 7%);
+}
+
+.event-form h1 {
+  margin: 0;
+  color: #18223a;
+  font-size: 34px;
+  letter-spacing: -0.04em;
+}
+
+.event-form label {
+  display: grid;
+  gap: 8px;
+  color: #344054;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.event-form label span {
+  color: #667085;
+  font-weight: 400;
+}
+
+.event-form input,
+.event-form select,
+.event-form textarea {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #d0d5dd;
+  border-radius: 9px;
+  color: #18223a;
+  background: #fff;
+}
+
+.event-form input,
+.event-form select {
+  min-height: 44px;
+}
+
+.event-form textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.event-form input:focus,
+.event-form select:focus,
+.event-form textarea:focus {
+  border-color: #4f46e5;
+  outline: 3px solid rgb(79 70 229 / 15%);
+}
+
+.event-form__dates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 540px) {
   .event-form {
-    display: grid;
-    gap: 20px;
-    padding: 32px;
-    border: 1px solid #e5e7ef;
-    border-radius: 18px;
-    background: #fff;
-    box-shadow: 0 16px 36px rgb(27 37 61 / 7%);
+    padding: 20px;
   }
 
-  .event-form h1 {
-    margin: 0;
-    color: #18223a;
-    font-size: 34px;
-    letter-spacing: -0.04em;
+  .event-form__dates {
+    grid-template-columns: 1fr;
   }
+}
 
-  .event-form label {
-    display: grid;
-    gap: 8px;
-    color: #344054;
-    font-size: 14px;
-    font-weight: 700;
-  }
+.event-form > .button {
+  justify-self: start;
+  min-width: 190px;
+  margin-top: 4px;
+}
 
-  .event-form label span {
-    color: #667085;
-    font-weight: 400;
-  }
-
-  .event-form input,
-  .event-form select,
-  .event-form textarea {
-    width: 100%;
-    padding: 11px 12px;
-    border: 1px solid #d0d5dd;
-    border-radius: 9px;
-    color: #18223a;
-    background: #fff;
-  }
-
-  .event-form input,
-  .event-form select {
-    min-height: 44px;
-  }
-
-  .event-form textarea {
-    resize: vertical;
-    line-height: 1.5;
-  }
-
-  .event-form input:focus,
-  .event-form select:focus,
-  .event-form textarea:focus {
-    border-color: #4f46e5;
-    outline: 3px solid rgb(79 70 229 / 15%);
-  }
-
-    .event-form__dates {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
-  }
-
-  @media (max-width: 540px) {
-    .event-form {
-      padding: 20px;
-    }
-
-    .event-form__dates {
-      grid-template-columns: 1fr;
-    }
-  }
-
-    .event-form > .button {
-    justify-self: start;
-    min-width: 190px;
-    margin-top: 4px;
-  }
-
-  .event-form .form-message {
-    margin-top: -4px;
-    margin-bottom: 0;
-  }
+.event-form .form-message {
+  margin-top: -4px;
+  margin-bottom: 0;
+}

@@ -129,9 +129,15 @@ class OrganizerController extends Controller
                 return [
                     'id' => $event->id,
                     'title' => $event->title,
+                    'description' => $event->description,
+                    'category' => $event->category,
                     'status' => $event->status,
                     'starts_at' => $event->starts_at,
                     'ends_at' => $event->ends_at,
+                    'application_deadline' => $event->application_deadline,
+                    'location' => $event->location,
+                    'address' => $event->address,
+                    'participant_limit' => $event->participant_limit,
                     'applications_count' => $event->applications_count,
                 ];
             });

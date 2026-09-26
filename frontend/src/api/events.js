@@ -34,3 +34,36 @@ export const publishEvent = async (eventId) => {
 
   return response.data;
 };
+
+export const updateEvent = async (eventId, eventData) => {
+  const response = await http.patch(`/events/${eventId}`, eventData);
+  return response.data;
+};
+
+export const cancelEvent = async (eventId) => {
+  const response = await http.post(`/events/${eventId}/cancel`);
+  return response.data;
+};
+
+export const deleteEvent = async (eventId) => {
+  await http.delete(`/events/${eventId}`);
+};
+
+export const getEventApplications = async (eventId) => {
+  const response = await http.get(`/events/${eventId}/applications`);
+  return response.data;
+};
+
+export const acceptEventApplication = async (applicationId) => {
+  const response = await http.post(
+    `/event-applications/${applicationId}/accept`,
+  );
+  return response.data;
+};
+
+export const rejectEventApplication = async (applicationId) => {
+  const response = await http.post(
+    `/event-applications/${applicationId}/reject`,
+  );
+  return response.data;
+};

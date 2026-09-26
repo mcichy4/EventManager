@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { getOrganizerEvents } from "../api/organizers";
-import { publishEvent } from "../api/events";
+import { cancelEvent, deleteEvent, publishEvent } from "../api/events";
 
 export default function OrganizerEventsPage() {
   const { organizerId } = useParams();
@@ -12,6 +12,7 @@ export default function OrganizerEventsPage() {
   const [error, setError] = useState(null);
   const [actionError, setActionError] = useState(null);
   const [publishingId, setPublishingId] = useState(null);
+  const [processingEventId, setProcessingEventId] = useState(null);
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -46,6 +47,52 @@ export default function OrganizerEventsPage() {
       );
     } finally {
       setPublishingId(null);
+    }
+  };
+
+  const handleCancel = async (eventId) => {
+    if (!window.confirm("Czy na pewno chcesz anulować to wydarzenie?")) {
+      return;
+    }
+
+    setActionError(null);
+    setProcessingEventId(eventId);
+
+    try {
+      const updatedEvent = await cancelEvent(eventId);
+      setEvents((currentEvents) =>
+        currentEvents.map((event) =>
+          event.id === eventId ? { ...event, ...updatedEvent } : event,
+        ),
+      );
+    } catch {
+      setActionError(
+        "Nie udało się anulować wydarzenia. Spróbuj ponownie za chwilę.",
+      );
+    } finally {
+      setProcessingEventId(null);
+    }
+  };
+
+  const handleDelete = async (eventId) => {
+    if (!window.confirm("Czy na pewno chcesz trwale usunąć ten szkic?")) {
+      return;
+    }
+
+    setActionError(null);
+    setProcessingEventId(eventId);
+
+    try {
+      await deleteEvent(eventId);
+      setEvents((currentEvents) =>
+        currentEvents.filter((event) => event.id !== eventId),
+      );
+    } catch {
+      setActionError(
+        "Nie udało się usunąć wydarzenia. Spróbuj ponownie za chwilę.",
+      );
+    } finally {
+      setProcessingEventId(null);
     }
   };
 
@@ -117,14 +164,57 @@ export default function OrganizerEventsPage() {
                 {statusLabels[event.status] ?? event.status}
               </span>
               <span>{event.applications_count} zgłoszeń</span>
+              <Link
+                className="text-button"
+                to={`/organizers/${organizerId}/events/${event.id}/edit`}
+                state={{ event, organizer }}
+              >
+                Edytuj wydarzenie
+              </Link>
+              <Link
+                className="text-button"
+                to={`/events/${event.id}/applications`}
+                state={{ event, organizer, organizerId }}
+              >
+                Zarządzaj zgłoszeniami
+              </Link>
               {event.status === "draft" && (
+                <div className="organizer-event-card__actions">
+                  <button
+                    className="button button-primary organizer-event-card__publish"
+                    type="button"
+                    onClick={() => handlePublish(event.id)}
+                    disabled={
+                      publishingId === event.id ||
+                      processingEventId === event.id
+                    }
+                  >
+                    {publishingId === event.id
+                      ? "Publikowanie..."
+                      : "Opublikuj"}
+                  </button>
+                  <button
+                    className="text-button text-button--danger"
+                    type="button"
+                    onClick={() => handleDelete(event.id)}
+                    disabled={processingEventId === event.id}
+                  >
+                    {processingEventId === event.id
+                      ? "Usuwanie..."
+                      : "Usuń szkic"}
+                  </button>
+                </div>
+              )}
+              {event.status === "published" && (
                 <button
-                  className="button button-primary organizer-event-card__publish"
+                  className="text-button text-button--danger"
                   type="button"
-                  onClick={() => handlePublish(event.id)}
-                  disabled={publishingId === event.id}
+                  onClick={() => handleCancel(event.id)}
+                  disabled={processingEventId === event.id}
                 >
-                  {publishingId === event.id ? "Publikowanie..." : "Opublikuj"}
+                  {processingEventId === event.id
+                    ? "Anulowanie..."
+                    : "Anuluj wydarzenie"}
                 </button>
               )}
             </div>

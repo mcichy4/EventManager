@@ -122,6 +122,15 @@ export default function OrganizerEventsPage() {
         {" "}
         Utwórz nowe wydarzenie
       </Link>
+      {organizer?.role === "owner" && (
+        <Link
+          className="text-button organizer-events-page__members-link"
+          to={`/organizers/${organizerId}/members`}
+          state={{ organizer }}
+        >
+          Zarządzaj członkami organizacji
+        </Link>
+      )}
 
       {isLoading && <p>Ładowanie wydarzeń...</p>}
       {error && <p role="alert">{error}</p>}

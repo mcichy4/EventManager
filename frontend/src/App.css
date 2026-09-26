@@ -840,6 +840,89 @@
   margin-top: 28px;
 }
 
+.organizer-events-page__members-link {
+  display: inline-block;
+  margin-left: 16px;
+}
+
+.organizer-members-page__intro {
+  color: #667085;
+}
+
+.member-form {
+  display: grid;
+  gap: 8px;
+  max-width: 620px;
+  margin: 28px 0 16px;
+}
+
+.member-form label {
+  color: #344054;
+  font-weight: 600;
+}
+
+.member-form__controls {
+  display: flex;
+  gap: 12px;
+}
+
+.member-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 11px 13px;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  font: inherit;
+}
+
+.members-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.member-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid #eaecf0;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.member-card h2,
+.member-card p {
+  margin: 0;
+}
+
+.member-card h2 {
+  color: #18223a;
+  font-size: 1rem;
+}
+
+.member-card p {
+  margin-top: 5px;
+  color: #667085;
+}
+
+.member-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.member-role {
+  color: #344054;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.member-role--owner {
+  color: #6941c6;
+}
+
 .organizer-event-card {
   display: flex;
   align-items: center;
@@ -945,6 +1028,22 @@
 }
 
 @media (max-width: 540px) {
+  .organizer-events-page__members-link {
+    display: block;
+    margin: 14px 0 0;
+  }
+
+  .member-form__controls,
+  .member-card,
+  .member-card__actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .member-card__actions {
+    gap: 10px;
+  }
+
   .organizer-event-card {
     align-items: start;
     flex-direction: column;

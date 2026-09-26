@@ -10,6 +10,22 @@ export const getOrganizerEvents = async (organizerId) => {
   return response.data;
 };
 
+export const getOrganizerMembers = async (organizerId) => {
+  const response = await http.get(`/organizers/${organizerId}/members`);
+  return response.data;
+};
+
+export const addOrganizerMember = async (organizerId, email) => {
+  const response = await http.post(`/organizers/${organizerId}/members`, {
+    email,
+  });
+  return response.data;
+};
+
+export const removeOrganizerMember = async (organizerId, memberId) => {
+  await http.delete(`/organizers/${organizerId}/members/${memberId}`);
+};
+
 export const createOrganizer = async ({ name, type, description }) => {
   const response = await http.post("/organizers", {
     name,

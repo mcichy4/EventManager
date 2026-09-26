@@ -14,6 +14,7 @@ import "./App.css";
 import CreateOrganizerPage from "./pages/CreateOrganizerPage";
 import EventApplicationsPage from "./pages/EventApplicationsPage";
 import EditEventPage from "./pages/EditEventPage";
+import OrganizerMembersPage from "./pages/OrganizerMembersPage";
 
 export default function App() {
   return (
@@ -71,6 +72,14 @@ export default function App() {
               element={
                 <RequireAuth>
                   <OrganizerEventsPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/organizers/:organizerId/members"
+              element={
+                <RequireAuth>
+                  <OrganizerMembersPage />
                 </RequireAuth>
               }
             />

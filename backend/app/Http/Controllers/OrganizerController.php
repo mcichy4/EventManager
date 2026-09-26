@@ -82,8 +82,12 @@ class OrganizerController extends Controller
     public function addMember(AddOrganizerMemberRequest $request, AddOrganizerMember $addOrganizerMember, Organizer $organizer): JsonResponse
     {
         Gate::authorize('manageMember', $organizer);
+        $member = $request->validated('email')
+            ? User::query()->where('email', $request->validated('email'))->firstOrFail()
+            : User::findOrFail($request->validated('user_id'));
+
         $addOrganizerMember->execute(
-            User::findOrFail($request->validated('user_id')),
+            $member,
             $organizer
         );
 

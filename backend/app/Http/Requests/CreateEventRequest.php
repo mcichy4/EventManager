@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\EventCategory;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * Sprawdza członkostwo u organizatora oraz format danych tworzonego wydarzenia.
@@ -37,6 +39,8 @@ class CreateEventRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
+            'category' => ['required', Rule::enum(EventCategory::class)],
+            'address' => ['nullable', 'string', 'max:255'],
             'starts_at' => ['required', 'date'],
             'ends_at' => ['required', 'date'],
             'application_deadline' => ['nullable', 'date'],

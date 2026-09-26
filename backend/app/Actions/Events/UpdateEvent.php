@@ -49,7 +49,9 @@ class UpdateEvent
         $editableFields = [
             'title',
             'description',
+            'category',
             'location',
+            'address',
             'participant_limit',
             'starts_at',
             'ends_at',

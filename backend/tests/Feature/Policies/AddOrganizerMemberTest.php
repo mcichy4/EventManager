@@ -71,6 +71,30 @@ class AddOrganizerMemberTest extends TestCase
         ]);
     }
 
+    public function test_owner_can_add_organizer_member_by_email(): void
+    {
+        $owner = User::factory()->create();
+        $organizer = app(CreateOrganizer::class)->execute(
+            $owner,
+            'Test Organizer',
+            OrganizerType::COMPANY->value,
+            'Test Description'
+        );
+        $member = User::factory()->create();
+
+        $this->actingAs($owner)
+            ->postJson("/api/organizers/{$organizer->id}/members", [
+                'email' => $member->email,
+            ])
+            ->assertCreated();
+
+        $this->assertDatabaseHas('organizer_user', [
+            'organizer_id' => $organizer->id,
+            'user_id' => $member->id,
+            'role' => OrganizerMemberRole::MEMBER->value,
+        ]);
+    }
+
     public function test_guest_cannot_add_organizer_member(): void
     {
         $owner = User::factory()->create();

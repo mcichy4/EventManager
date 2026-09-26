@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Enums\EventCategory;
 use App\Enums\EventStatus;
 use App\Enums\OrganizerType;
 use App\Models\Organizer;
@@ -46,6 +47,8 @@ class EventControllerTest extends TestCase
             'application_deadline' => now()->addDays(6)->toISOString(),
             'location' => 'Test Location',
             'participant_limit' => 100,
+            'address' => '123 Test St, Test City',
+            'category' => EventCategory::WORKSHOPS->value,
         ], $overrides);
     }
 
@@ -78,6 +81,8 @@ class EventControllerTest extends TestCase
             'organizer_id' => $organizer->id,
             'title' => 'Test Event',
             'description' => 'This is a test event.',
+            'category' => EventCategory::WORKSHOPS->value,
+            'address' => '123 Test St, Test City',
             'location' => 'Test Location',
             'participant_limit' => 100,
             'status' => EventStatus::DRAFT->value,
@@ -180,6 +185,22 @@ class EventControllerTest extends TestCase
         $response
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['title']);
+    }
+
+    public function test_category_is_required_to_create_event(): void
+    {
+        $user = User::factory()->create();
+        $organizer = $this->createOrganization();
+        $organizer->users()->attach($user);
+
+        $this->actingAs($user);
+
+        $data = $this->createValidEventData();
+        unset($data['category']);
+
+        $this->postJson("/api/organizers/{$organizer->id}/events", $data)
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['category']);
     }
 
     /**

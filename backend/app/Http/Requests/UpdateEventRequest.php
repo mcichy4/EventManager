@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\EventCategory;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * Waliduje dane częściowej aktualizacji. Uprawnienia sprawdza Gate w kontrolerze.
@@ -30,6 +32,8 @@ class UpdateEventRequest extends FormRequest
         return [
             'title' => ['sometimes', 'string', 'max:255'],
             'description' => ['sometimes', 'nullable', 'string'],
+            'category' => ['sometimes', 'string', Rule::enum(EventCategory::class)],
+            'address' => ['sometimes', 'nullable', 'string', 'max:255'],
             'starts_at' => ['sometimes', 'date'],
             'ends_at' => ['sometimes', 'date'],
             'application_deadline' => ['sometimes', 'nullable', 'date'],

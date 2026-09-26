@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\Events;
 
+use App\Enums\EventCategory;
 use App\Enums\EventStatus;
 use App\Enums\OrganizerType;
 use App\Models\Event;
@@ -115,6 +116,26 @@ class UpdateEventTest extends TestCase
         $this->assertDatabaseHas('events', [
             'id' => $event->id,
             'title' => 'New title',
+        ]);
+    }
+
+    public function test_category_and_address_can_be_updated_via_api(): void
+    {
+        $event = $this->createEvent(EventStatus::DRAFT);
+        $user = User::factory()->create();
+        $event->organizer->users()->attach($user);
+
+        $this->actingAs($user)
+            ->patchJson("/api/events/{$event->id}", [
+                'category' => EventCategory::WORKSHOPS->value,
+                'address' => 'ul. Mińska 25, Warszawa',
+            ])
+            ->assertOk();
+
+        $this->assertDatabaseHas('events', [
+            'id' => $event->id,
+            'category' => EventCategory::WORKSHOPS->value,
+            'address' => 'ul. Mińska 25, Warszawa',
         ]);
     }
 

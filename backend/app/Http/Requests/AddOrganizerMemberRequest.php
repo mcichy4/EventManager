@@ -23,7 +23,8 @@ class AddOrganizerMemberRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'integer', 'exists:users,id'],
+            'user_id' => ['nullable', 'integer', 'exists:users,id', 'required_without:email'],
+            'email' => ['nullable', 'email', 'exists:users,email', 'required_without:user_id'],
         ];
     }
 }

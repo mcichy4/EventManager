@@ -71,6 +71,8 @@ class ListOrganizerEventsTest extends TestCase
             ->assertJsonFragment([
                 'id' => $event1->id,
                 'title' => $event1->title,
+                'description' => $event1->description,
+                'location' => $event1->location,
                 'status' => EventStatus::DRAFT->value,
             ])
             ->assertJsonFragment([

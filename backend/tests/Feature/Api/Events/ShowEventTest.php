@@ -48,6 +48,9 @@ class ShowEventTest extends TestCase
             'id' => $event->id,
             'title' => $event->title,
         ]);
+        $response->assertJsonPath('organizer.id', $organizer->id);
+        $response->assertJsonPath('organizer.name', $organizer->name);
+        $response->assertJsonPath('accepted_applications_count', 0);
     }
 
     public function test_guest_cannot_show_draft_event(): void
